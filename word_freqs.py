@@ -71,9 +71,9 @@ def parseText(text, max_threshold=0.34, single_occurrence=False):
                 popularWords[word] += count
 
 
-def processRedditor(redditor):
+def processRedditor(redditor, max_subs):
     """Parse all submissions and comments for the given Redditor."""
-    for entry in with_status(redditor.get_overview(limit=None)):
+    for entry in with_status(redditor.get_overview(limit=max_subs)):
         if isinstance(entry, praw.objects.Comment):  # Parse comment
             parseText(entry.body)
         else:  # Parse submission
@@ -99,9 +99,9 @@ def processSubmission(submission, include_comments=True):
         parseText(submission.selftext)
 
 
-def processSubreddit(subreddit):
+def processSubreddit(subreddit, max_subs):
     """Parse all comments, title text, and selftext in a given subreddit."""
-    for submission in with_status(subreddit.get_top_from_month(limit=None)):
+    for submission in with_status(subreddit.get_top_from_month(limit=max_subs)):
         processSubmission(submission)
 
 
@@ -117,18 +117,24 @@ def with_status(iterable):
 
 def main():
     try:
-        username, target = sys.argv[1:]
+        username, target, max_subs = sys.argv[1:]
+        
         if target.startswith('/r/'):
             is_subreddit = True
         elif target.startswith('/u/'):
             is_subreddit = False
         else:
             raise Exception
+    
         target = target[3:]
+        max_subs = int(max_subs)
+        if max_subs == 0:
+            max_subs = None
+
     except:
-        print("Usage: subreddit_word_freqs.py YOUR_USERNAME TARGET\n\n"
-              "TARGET should either be of the format '/r/SUBREDDIT' or "
-              "'/u/USERNAME'.")
+        print("Usage: subreddit_word_freqs.py YOUR_USERNAME TARGET MAX_SUBS\n\n"
+              "TARGET should either be of the format '/r/SUBREDDIT' or '/u/USERNAME'.\n\n"
+              "MAX_SUBS should be 0 for to scrape all submissions, otherwise specify the number.")
         return 1
 
     # open connection to Reddit
@@ -139,9 +145,9 @@ def main():
     sys.stderr.flush()
 
     if is_subreddit:
-        processSubreddit(r.get_subreddit(target))
+        processSubreddit(r.get_subreddit(target), max_subs)
     else:
-        processRedditor(r.get_redditor(target))
+        processRedditor(r.get_redditor(target), max_subs)
 
     # build a string containing all the words for the word cloud software
     output = ""
