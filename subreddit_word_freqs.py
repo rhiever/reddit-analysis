@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This is the Reddit Analysis project.
 #
 # Copyright 2013 Randal S. Olson.
@@ -12,7 +14,7 @@
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see http://www.gnu.org/licenses/.
 
-import praw, heapq, csv, string
+import praw, heapq, csv, string, sys
 from collections import defaultdict
 
 popularWords = defaultdict(int)
@@ -38,8 +40,8 @@ for dictionaryWord in dictionaryFile:
     commonWords[dictionaryWord] = 1
 dictionaryFile.close()
 
-# open connection to Reddit
-r = praw.Reddit(user_agent="bot by /u/<ENTER_USERNAME_HERE>")
+# put words here that you don't want to include in the word cloud
+excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted", "tl", "k/year", "--", "/", "u/", ")x"]
 
 # parses a comment and all of its child comments
 def parseComment(comm):
@@ -52,54 +54,72 @@ def parseComment(comm):
                 popularWords[word] += 1
 
 
-# parse all comments, title text, and selftext in a given subreddit
-for submission in r.get_subreddit("<ENTER_SUBREDDIT_NAME_HERE>").get_top_from_month(limit=None):
-    
-    # parse all the comments for the submission
-    submission.replace_more_comments()
-    for comment in praw.helpers.flatten_tree(submission.comments):
-        parseComment(comment)
-    
-    # parse the title of the submission
-    for word in submission.title.split(" "):
-        word = word.strip(punctuation).lower()
-        if word != "" and commonWords[word] < 1:
-            popularWords[word] += 1
-      
-    # parse the selftext of the submission (if applicable)
+def processSubreddit(r, subreddit):
+    # parse all comments, title text, and selftext in a given subreddit
+    sys.stderr.write('Analyzing /r/{0}\n'.format(subreddit))
+    for submission in r.get_subreddit(subreddit).get_top_from_month(limit=None):
+
+        # Provide a visible status indicator
+        sys.stderr.write('.')
+        sys.stderr.flush()
+
+        # parse all the comments for the submission
+        submission.replace_more_comments()
+        for comment in praw.helpers.flatten_tree(submission.comments):
+            parseComment(comment)
+
+        # parse the title of the submission
+        for word in submission.title.split(" "):
+            word = word.strip(punctuation).lower()
+            if word != "" and commonWords[word] < 1:
+                popularWords[word] += 1
+
+        # parse the selftext of the submission (if applicable)
+        try:
+            for paragraph in submission.selftext.split("\n"):
+                for word in paragraph.split(" "):
+                    word = word.strip(punctuation).lower()
+                    if word != "" and commonWords[word] < 1:
+                        popularWords[word] += 1
+        except AttributeError:
+            pass
+
+
+def main():
     try:
-        for paragraph in submission.selftext.split("\n"):
-            for word in paragraph.split(" "):
-                word = word.strip(punctuation).lower()
-                if word != "" and commonWords[word] < 1:
-                    popularWords[word] += 1
-    except AttributeError:
-        pass
+        username, subreddit = sys.argv[1:]
+    except:
+        print 'Usage: subreddit_word_freqs.py username subreddit'
+        return 1
+
+    # open connection to Reddit
+    r = praw.Reddit(user_agent="bot by /u/{0}".format(username))
+    processSubreddit(r, subreddit)
+
+    # build a string containing all the words for the word cloud software
+    output = ""
+
+    for word in sorted(popularWords.keys()):
+
+        # tweak this number depending on the subreddit
+        # some subreddits end up having TONS of words and it seems to overflow the Python string buffer
+        if popularWords[word] > 2:
+            pri = True
+
+            # do not print a word if it is in the excluded word list
+            for ew in excludedWords:
+                if ew in word:
+                    pri = False
+                    break
+
+            # add as many copies of the word as it was mentioned in the subreddit
+            if pri:
+                for i in range(popularWords[word]):
+                    output += word + " "
+
+    # print the series of words for the word cloud software
+    print output
 
 
-# put words here that you don't want to include in the word cloud
-excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted", "tl", "k/year", "--", "/", "u/", ")x"]
-
-# build a string containing all the words for the word cloud software
-output = ""
-
-for word in sorted(popularWords.keys()):
-
-    # tweak this number depending on the subreddit
-    # some subreddits end up having TONS of words and it seems to overflow the Python string buffer
-    if popularWords[word] > 2:
-        pri = True
-        
-        # do not print a word if it is in the excluded word list
-        for ew in excludedWords:
-            if ew in word:
-                pri = False
-                break
-             
-        # add as many copies of the word as it was mentioned in the subreddit
-        if pri:
-            for i in range(popularWords[word]):
-                output += word + " "
- 
-# print the series of words for the word cloud software
-print output
+if __name__ == '__main__':
+    sys.exit(main())
