@@ -45,28 +45,19 @@ r = praw.Reddit(user_agent="bot by /u/<ENTER_USERNAME_HERE>")
 def parseComment(comm):
 
     # parse the comment itself
-    try:
-        for paragraph in comm.body.split("\n"):
-            for word in paragraph.split(" "):
-                word = word.strip(punctuation).lower()
-                if word != "" and commonWords[word] < 1:
-                    popularWords[word] += 1
-    except AttributeError:
-        pass
-    
-    # parse the comment's child comments
-    try:
-        for c in comm.replies:
-            parseComment(c)
-    except AttributeError:
-        pass
+    for paragraph in comm.body.split("\n"):
+        for word in paragraph.split(" "):
+            word = word.strip(punctuation).lower()
+            if word != "" and commonWords[word] < 1:
+                popularWords[word] += 1
 
 
 # parse all comments, title text, and selftext in a given subreddit
 for submission in r.get_subreddit("<ENTER_SUBREDDIT_NAME_HERE>").get_top_from_month(limit=None):
     
     # parse all the comments for the submission
-    for comment in submission.comments:
+    submission.replace_more_comments()
+    for comment in praw.helpers.flatten_tree(submission.comments):
         parseComment(comment)
     
     # parse the title of the submission
