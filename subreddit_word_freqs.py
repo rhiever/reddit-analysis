@@ -112,8 +112,7 @@ def main():
             # add as many copies of the word as it was mentioned in the
             # subreddit
             if pri:
-                for i in range(popularWords[word]):
-                    output += word + " "
+                output += (word + " ") * popularWords[word]
 
     # print the series of words for the word cloud software
     print output
