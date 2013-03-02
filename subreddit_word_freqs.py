@@ -40,8 +40,8 @@ with open("/usr/share/dict/words", "r") as dictionaryFile:
         commonWords.add(dictionaryWord.strip(punctuation).lower())
 
 # put words here that you don't want to include in the word cloud
-excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted", "tl",
-                 "k/year", "--", "/", "u/", ")x"]
+excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
+                 "k/year", "--", "/", "u/", ")x", "amp;c"]
 
 
 def parseText(text):
@@ -95,6 +95,9 @@ def main():
 
     # build a string containing all the words for the word cloud software
     output = ""
+    
+    # open output file to store the output string
+    outFile = open(str(subreddit) + ".csv", "w")
 
     for word in sorted(popularWords.keys()):
 
@@ -120,9 +123,16 @@ def main():
             # add as many copies of the word as it was mentioned in the
             # subreddit
             if pri:
-                output += (word + " ") * popularWords[word]
+                txt = ((word + " ") * popularWords[word])
+            	txt = txt.encode("UTF-8").strip(" ")
+            	txt += " "
+                output += txt
+                outFile.write(txt)
+
+    outFile.close()
 
     # print the series of words for the word cloud software
+    # place this text into wordle.net
     print output
 
 
