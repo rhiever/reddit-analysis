@@ -61,10 +61,10 @@ def processRedditor(r, user):
     
     for entry in user.get_overview(limit=None):
 
-    	entryCount += 1
+		entryCount += 1
 		
+		# provide a visible status indicator
 		if entryCount % 100 == 0:
-			# provide a visible status indicator
 			sys.stderr.write('.')
 			sys.stderr.flush()
 			dotCount += 1
@@ -77,15 +77,18 @@ def processRedditor(r, user):
 		if type(entry) is praw.objects.Comment:
 			parseText(entry.body)
         
-        # submissions
-		if type(entry) is praw.objects.Submission:
+		# submissions
+		elif type(entry) is praw.objects.Submission:
 			# parse the title of the submission
 			parseText(entry.title)
 
 			# parse the selftext of the submission (if applicable)
 			if entry.is_self:
 				parseText(entry.selftext)
-
+				
+		# unknown
+		else:
+			sys.stderr.write('\nUnknown entry type: {0}\n'.format(str(type(entry))))
 
 def main():
     try:
