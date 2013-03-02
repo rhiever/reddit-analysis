@@ -128,7 +128,12 @@ def main():
     output = ""
 
     # open output file to store the output string
-    outFile = open(str(target) + ".csv", "w")
+    outFileName = str(target) + ".csv"
+
+    if not is_subreddit:
+            outFileName = "user " + outFileName
+
+    outFile = open(outFileName, "w")
 
     for word in sorted(popularWords.keys()):
 
