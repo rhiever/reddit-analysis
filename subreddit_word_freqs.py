@@ -65,7 +65,7 @@ def processSubreddit(r, subreddit):
         sys.stderr.flush()
         dotCount += 1
         
-        if dotCount >= 20:
+        if dotCount >= 50:
             sys.stderr.write('\n')
             dotCount = 0
 
