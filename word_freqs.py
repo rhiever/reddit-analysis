@@ -48,56 +48,87 @@ def parseText(text):
     """Parse the passed in text and add words that are not common."""
     for word in text.split():  # Split on all whitespace
         word = word.strip(punctuation).lower()
-        if word not in commonWords:  # Guaranteed not to be ''
+        if word and word not in commonWords:
             popularWords[word] += 1
 
 
-def processSubreddit(r, subreddit):
+def processRedditor(redditor):
+    """Parse all submissions and comments for the given Redditor."""
+    for entry in redditor.get_overview(limit=None):
+        if isinstance(entry, praw.objects.Comment):  # Parse comment
+            parseText(entry.body)
+        else:  # Parse submission
+            processSubmission(entry, include_comments=False)
+
+
+def processSubmission(submission, include_comments=True):
+    """Parse a submission's text and body (if applicable).
+
+    Include the submission's comments when `include_comments` is True.
+
+    """
+    if include_comments:  # parse all the comments for the submission
+        submission.replace_more_comments()
+        for comment in praw.helpers.flatten_tree(submission.comments):
+            parseText(comment.body)
+
+    # parse the title of the submission
+    parseText(submission.title)
+
+    # parse the selftext of the submission (if applicable)
+    if submission.is_self:
+        parseText(submission.selftext)
+
+
+def processSubreddit(subreddit):
     """Parse all comments, title text, and selftext in a given subreddit."""
-    sys.stderr.write('Analyzing /r/{0}\n'.format(subreddit))
-    
     dotCount = 0
-    
+
     for submission in subreddit.get_top_from_month(limit=None):
 
         # Provide a visible status indicator
         sys.stderr.write('.')
         sys.stderr.flush()
         dotCount += 1
-        
+
         if dotCount >= 50:
             sys.stderr.write('\n')
             dotCount = 0
 
-        # parse all the comments for the submission
-        submission.replace_more_comments()
-        for comment in praw.helpers.flatten_tree(submission.comments):
-            parseText(comment.body)
-
-        # parse the title of the submission
-        parseText(submission.title)
-
-        # parse the selftext of the submission (if applicable)
-        if submission.is_self:
-            parseText(submission.selftext)
+        processSubmission(submission)
 
 
 def main():
     try:
-        username, subreddit = sys.argv[1:]
+        username, target = sys.argv[1:]
+        if target.startswith('/r/'):
+            is_subreddit = True
+        elif target.startswith('/u/'):
+            is_subreddit = False
+        else:
+            raise Exception
+        target = target[3:]
     except:
-        print 'Usage: subreddit_word_freqs.py username subreddit'
+        print("Usage: subreddit_word_freqs.py YOUR_USERNAME TARGET\n\n"
+              "TARGET should either be of the format '/r/SUBREDDIT' or "
+              "'/u/USERNAME'.")
         return 1
 
     # open connection to Reddit
     r = praw.Reddit(user_agent="bot by /u/{0}".format(username))
-    processSubreddit(r, r.get_subreddit(subreddit))
+
+    # run analysis
+    sys.stderr.write('Analyzing {0}\n'.format(sys.argv[2]))
+    if is_subreddit:
+        processSubreddit(r.get_subreddit(target))
+    else:
+        processRedditor(r.get_redditor(target))
 
     # build a string containing all the words for the word cloud software
     output = ""
-    
+
     # open output file to store the output string
-    outFile = open(str(subreddit) + ".csv", "w")
+    outFile = open(str(target) + ".csv", "w")
 
     for word in sorted(popularWords.keys()):
 
@@ -112,7 +143,7 @@ def main():
                 if ew in word:
                     pri = False
                     break
-               
+
             # don't print the word if it's just a number
             try:
                 int(word)
@@ -124,8 +155,8 @@ def main():
             # subreddit
             if pri:
                 txt = ((word + " ") * popularWords[word])
-            	txt = txt.encode("UTF-8").strip(" ")
-            	txt += " "
+                txt = txt.encode("UTF-8").strip(" ")
+                txt += " "
                 output += txt
                 outFile.write(txt)
 
