@@ -54,7 +54,17 @@ def parseText(text):
 
 def processRedditor(redditor):
     """Parse all submissions and comments for the given Redditor."""
+    
+    entryCount = 0
+    
     for entry in redditor.get_overview(limit=None):
+        entryCount += 1
+        
+        # Provide a visible status indicator
+        if entryCount % 100 == 0:
+            sys.stderr.write('.')
+            sys.stderr.flush()
+        
         if isinstance(entry, praw.objects.Comment):  # Parse comment
             parseText(entry.body)
         else:  # Parse submission
@@ -119,6 +129,8 @@ def main():
 
     # run analysis
     sys.stderr.write('Analyzing {0}\n'.format(sys.argv[2]))
+    sys.stderr.flush()
+    
     if is_subreddit:
         processSubreddit(r.get_subreddit(target))
     else:
