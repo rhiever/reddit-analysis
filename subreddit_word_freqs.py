@@ -24,7 +24,7 @@ import sys
 from collections import defaultdict
 
 popularWords = defaultdict(int)
-commonWords = defaultdict(int)
+commonWords = set()
 
 # punctuation to strip from words
 punctuation = " " + string.punctuation + "\n"
@@ -33,37 +33,31 @@ punctuation = " " + string.punctuation + "\n"
 for i in range(10):
     punctuation += str(i)
 
-# store a list of common words to ignore
-commonWordsFile = open("common-words.csv", "r")
-for commonWordFileLine in csv.reader(commonWordsFile):
-    for commonWord in commonWordFileLine:
-        commonWords[commonWord.strip(punctuation).lower()] = 1
-commonWordsFile.close()
+# load a list of common words to ignore
+with open("common-words.csv", "r") as commonWordsFile:
+    for commonWordFileLine in csv.reader(commonWordsFile):
+        for commonWord in commonWordFileLine:
+            commonWords.add(commonWord.strip(punctuation).lower())
 
-dictionaryFile = open("/usr/share/dict/words", "r")
-for dictionaryWord in dictionaryFile:
-    dictionaryWord = dictionaryWord.strip(punctuation).lower()
-    commonWords[dictionaryWord] = 1
-dictionaryFile.close()
+with open("/usr/share/dict/words", "r") as dictionaryFile:
+    for dictionaryWord in dictionaryFile:
+        commonWords.add(dictionaryWord.strip(punctuation).lower())
 
 # put words here that you don't want to include in the word cloud
 excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted", "tl",
                  "k/year", "--", "/", "u/", ")x"]
 
 
-# parses a comment and all of its child comments
-def parseComment(comm):
-
-    # parse the comment itself
-    for paragraph in comm.body.split("\n"):
-        for word in paragraph.split(" "):
-            word = word.strip(punctuation).lower()
-            if word != "" and commonWords[word] < 1:
-                popularWords[word] += 1
+def parseText(text):
+    """Parse the passed in text and add words that are not common."""
+    for word in text.split():  # Split on all whitespace
+        word = word.strip(punctuation).lower()
+        if word not in commonWords:  # Guaranteed not to be ''
+            popularWords[word] += 1
 
 
 def processSubreddit(r, subreddit):
-    # parse all comments, title text, and selftext in a given subreddit
+    """Parse all comments, title text, and selftext in a given subreddit."""
     sys.stderr.write('Analyzing /r/{0}\n'.format(subreddit))
     for submission in subreddit.get_top_from_month(limit=None):
 
@@ -74,23 +68,14 @@ def processSubreddit(r, subreddit):
         # parse all the comments for the submission
         submission.replace_more_comments()
         for comment in praw.helpers.flatten_tree(submission.comments):
-            parseComment(comment)
+            parseText(comment.body)
 
         # parse the title of the submission
-        for word in submission.title.split(" "):
-            word = word.strip(punctuation).lower()
-            if word != "" and commonWords[word] < 1:
-                popularWords[word] += 1
+        parseText(submission.title)
 
         # parse the selftext of the submission (if applicable)
-        try:
-            for paragraph in submission.selftext.split("\n"):
-                for word in paragraph.split(" "):
-                    word = word.strip(punctuation).lower()
-                    if word != "" and commonWords[word] < 1:
-                        popularWords[word] += 1
-        except AttributeError:
-            pass
+        if submission.is_self:
+            parseText(submission.selftext)
 
 
 def main():
