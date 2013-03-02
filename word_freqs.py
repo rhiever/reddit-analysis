@@ -44,12 +44,12 @@ excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
                  "k/year", "--", "/", "u/", ")x", "amp;c"]
 
 
-def parseText(text, max_threshold=0.34, single_occurence=False):
+def parseText(text, max_threshold=0.34, single_occurrence=False):
     """Parse the passed in text and add words that are not common.
 
     :param max_threshold: The maximum relative frequency in the text a word can
         appear to be added. This prevents word spamming.
-    :param single_occurence: When True, only count each word once, rather than
+    :param single_occurrence: When True, only count each word once, rather than
         how many times it appears in the text.
 
     """
@@ -65,7 +65,7 @@ def parseText(text, max_threshold=0.34, single_occurence=False):
     # Add to popularWords list
     for word, count in text_words.items():
         if count / total <= max_threshold:
-            if single_occurence:
+            if single_occurrence:
                 popularWords[word] += 1
             else:
                 popularWords[word] += count
