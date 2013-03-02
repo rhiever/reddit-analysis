@@ -44,12 +44,31 @@ excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
                  "k/year", "--", "/", "u/", ")x", "amp;c"]
 
 
-def parseText(text):
-    """Parse the passed in text and add words that are not common."""
+def parseText(text, max_threshold=0.34, single_occurence=False):
+    """Parse the passed in text and add words that are not common.
+
+    :param max_threshold: The maximum relative frequency in the text a word can
+        appear to be added. This prevents word spamming.
+    :param single_occurence: When True, only count each word once, rather than
+        how many times it appears in the text.
+
+    """
+    total = 0.  # intentionally a float
+    text_words = defaultdict(int)
     for word in text.split():  # Split on all whitespace
         word = word.strip(punctuation).lower()
+        total += 1
         if word and word not in commonWords:
-            popularWords[word] += 1
+            text_words[word] += 1
+
+
+    # Add to popularWords list
+    for word, count in text_words.items():
+        if count / total <= max_threshold:
+            if single_occurence:
+                popularWords[word] += 1
+            else:
+                popularWords[word] += count
 
 
 def processRedditor(redditor):
