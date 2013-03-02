@@ -95,5 +95,6 @@ for word in sorted(popularWords.keys()):
         if pri:
             for i in range(popularWords[word]):
                 output += word + " "
-                
+ 
+# print the series of words for the word cloud software
 print output
