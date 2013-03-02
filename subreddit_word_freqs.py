@@ -4,17 +4,23 @@
 #
 # Copyright 2013 Randal S. Olson.
 #
-# This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
-# later version.
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
 #
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
 #
-# You should have received a copy of the GNU General Public License along with this program.
-# If not, see http://www.gnu.org/licenses/.
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see http://www.gnu.org/licenses/.
 
-import praw, heapq, csv, string, sys
+import csv
+import praw
+import string
+import sys
 from collections import defaultdict
 
 popularWords = defaultdict(int)
@@ -41,7 +47,9 @@ for dictionaryWord in dictionaryFile:
 dictionaryFile.close()
 
 # put words here that you don't want to include in the word cloud
-excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted", "tl", "k/year", "--", "/", "u/", ")x"]
+excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted", "tl",
+                 "k/year", "--", "/", "u/", ")x"]
+
 
 # parses a comment and all of its child comments
 def parseComment(comm):
@@ -57,7 +65,7 @@ def parseComment(comm):
 def processSubreddit(r, subreddit):
     # parse all comments, title text, and selftext in a given subreddit
     sys.stderr.write('Analyzing /r/{0}\n'.format(subreddit))
-    for submission in r.get_subreddit(subreddit).get_top_from_month(limit=None):
+    for submission in subreddit.get_top_from_month(limit=None):
 
         # Provide a visible status indicator
         sys.stderr.write('.')
@@ -94,7 +102,7 @@ def main():
 
     # open connection to Reddit
     r = praw.Reddit(user_agent="bot by /u/{0}".format(username))
-    processSubreddit(r, subreddit)
+    processSubreddit(r, r.get_subreddit(subreddit))
 
     # build a string containing all the words for the word cloud software
     output = ""
@@ -102,7 +110,8 @@ def main():
     for word in sorted(popularWords.keys()):
 
         # tweak this number depending on the subreddit
-        # some subreddits end up having TONS of words and it seems to overflow the Python string buffer
+        # some subreddits end up having TONS of words and it seems to overflow
+        # the Python string buffer
         if popularWords[word] > 2:
             pri = True
 
@@ -112,7 +121,8 @@ def main():
                     pri = False
                     break
 
-            # add as many copies of the word as it was mentioned in the subreddit
+            # add as many copies of the word as it was mentioned in the
+            # subreddit
             if pri:
                 for i in range(popularWords[word]):
                     output += word + " "
