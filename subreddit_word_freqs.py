@@ -29,10 +29,6 @@ commonWords = set()
 # punctuation to strip from words
 punctuation = " " + string.punctuation + "\n"
 
-# numbers to strip from words
-for i in range(10):
-    punctuation += str(i)
-
 # load a list of common words to ignore
 with open("common-words.csv", "r") as commonWordsFile:
     for commonWordFileLine in csv.reader(commonWordsFile):
@@ -105,6 +101,13 @@ def main():
                 if ew in word:
                     pri = False
                     break
+               
+            # don't print the word if it's just a number
+            try:
+                int(word)
+                pri = False
+            except:
+                pass
 
             # add as many copies of the word as it was mentioned in the
             # subreddit
