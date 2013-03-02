@@ -55,11 +55,19 @@ def parseText(text):
 def processSubreddit(r, subreddit):
     """Parse all comments, title text, and selftext in a given subreddit."""
     sys.stderr.write('Analyzing /r/{0}\n'.format(subreddit))
+    
+    dotCount = 0
+    
     for submission in subreddit.get_top_from_month(limit=None):
 
         # Provide a visible status indicator
         sys.stderr.write('.')
         sys.stderr.flush()
+        dotCount += 1
+        
+        if dotCount >= 20:
+            sys.stderr.write('\n')
+            dotCount = 0
 
         # parse all the comments for the submission
         submission.replace_more_comments()
