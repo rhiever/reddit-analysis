@@ -55,16 +55,16 @@ def parseText(text):
 def processSubreddit(r, subreddit):
     """Parse all comments, title text, and selftext in a given subreddit."""
     sys.stderr.write('Analyzing /r/{0}\n'.format(subreddit))
-    
+
     dotCount = 0
-    
+
     for submission in subreddit.get_top_from_month(limit=None):
 
         # Provide a visible status indicator
         sys.stderr.write('.')
         sys.stderr.flush()
         dotCount += 1
-        
+
         if dotCount >= 50:
             sys.stderr.write('\n')
             dotCount = 0
@@ -95,7 +95,7 @@ def main():
 
     # build a string containing all the words for the word cloud software
     output = ""
-    
+
     # open output file to store the output string
     outFile = open(str(subreddit) + ".csv", "w")
 
@@ -112,7 +112,7 @@ def main():
                 if ew in word:
                     pri = False
                     break
-               
+
             # don't print the word if it's just a number
             try:
                 int(word)
@@ -124,8 +124,8 @@ def main():
             # subreddit
             if pri:
                 txt = ((word + " ") * popularWords[word])
-            	txt = txt.encode("UTF-8").strip(" ")
-            	txt += " "
+                txt = txt.encode("UTF-8").strip(" ")
+                txt += " "
                 output += txt
                 outFile.write(txt)
 
