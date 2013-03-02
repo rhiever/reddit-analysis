@@ -1,7 +1,5 @@
-reddit-analysis
+Reddit Analysis project
 ===============
-
-This is the Reddit Analysis project.
 
 Copyright 2013 Randal S. Olson.
 
