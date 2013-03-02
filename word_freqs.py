@@ -54,17 +54,7 @@ def parseText(text):
 
 def processRedditor(redditor):
     """Parse all submissions and comments for the given Redditor."""
-    
-    entryCount = 0
-    
-    for entry in redditor.get_overview(limit=None):
-        entryCount += 1
-        
-        # Provide a visible status indicator
-        if entryCount % 100 == 0:
-            sys.stderr.write('.')
-            sys.stderr.flush()
-        
+    for entry in with_status(redditor.get_overview(limit=None)):
         if isinstance(entry, praw.objects.Comment):  # Parse comment
             parseText(entry.body)
         else:  # Parse submission
@@ -92,20 +82,18 @@ def processSubmission(submission, include_comments=True):
 
 def processSubreddit(subreddit):
     """Parse all comments, title text, and selftext in a given subreddit."""
-    dotCount = 0
+    for submission in with_status(subreddit.get_top_from_month(limit=None)):
+        processSubmission(submission)
 
-    for submission in subreddit.get_top_from_month(limit=None):
 
-        # Provide a visible status indicator
+def with_status(iterable):
+    """Wrap an interable outputing '.' for each item (up to 50 a line)."""
+    for i, item in enumerate(iterable):
         sys.stderr.write('.')
         sys.stderr.flush()
-        dotCount += 1
-
-        if dotCount >= 50:
+        if i % 50 == 49:
             sys.stderr.write('\n')
-            dotCount = 0
-
-        processSubmission(submission)
+        yield item
 
 
 def main():
@@ -130,7 +118,7 @@ def main():
     # run analysis
     sys.stderr.write('Analyzing {0}\n'.format(sys.argv[2]))
     sys.stderr.flush()
-    
+
     if is_subreddit:
         processSubreddit(r.get_subreddit(target))
     else:
