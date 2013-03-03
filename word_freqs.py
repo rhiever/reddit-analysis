@@ -46,7 +46,7 @@ excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
                  "k/year", "--", "/", "u/", ")x", "amp;c"]
 
 # command-line argument parsing
-usage = "usage: %prog USERNAME TARGET [options]\n\n"
+usage = "usage: %prog [options] USERNAME TARGET\n\n"
 usage += "USERNAME sets your Reddit username\n"
 usage += "TARGET sets the subreddit or user to count word frequencies for.\n"
 usage += "enter /r/TARGET for subreddits or /u/TARGET for users."
@@ -89,10 +89,10 @@ parser.add_option("--cwf",
                   help="count the number of times each word occurs. "
                   "[default]")
 
-(options, args) = parser.parse_args(args=sys.argv[3:])
+(options, args) = parser.parse_args()
 
-username = str(sys.argv[1])
-full_target = str(sys.argv[2])
+username = str(args[0])
+full_target = str(args[1])
 
 count_word_period = options.period
 limit = options.limit
