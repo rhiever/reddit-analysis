@@ -207,7 +207,7 @@ def main():
     outFileName = target + ".csv"
 
     if not options.is_subreddit:
-            outFileName = "user " + outFileName
+            outFileName = "user-" + outFileName
 
     outFile = open(outFileName, "w")
 
