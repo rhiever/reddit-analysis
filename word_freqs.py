@@ -90,21 +90,32 @@ def parse_cmd_line():
                       help="count the number of times each word occurs. "
                       "[default]")
 
-    (o, a) = parser.parse_args()
+    (_options, _args) = parser.parse_args()
 
-    full_target = str(a[1])
+    if len(_args) != 2:
+        parser.error("Invalid number of arguments provided.")
+    
+    full_target = str(_args[1])
 
     if full_target.startswith("/r/"):
-        o.is_subreddit = True
+        _options.is_subreddit = True
     elif full_target.startswith("/u/"):
-        o.is_subreddit = False
+        _options.is_subreddit = False
     else:
         raise Exception("\nInvalid target.\n")
 
-    if o.period not in ["day", "week", "month", "year", "all"]:
+    if _options.period not in ["day", "week", "month", "year", "all"]:
         raise Exception("\nInvalid period.\n")
 
-    return (o, a)
+    return (_options, _args)
+
+
+
+# global program options and arguments
+(options, args) = parse_cmd_line()
+
+
+
 
 def parseText(text):
     """Parse the passed in text and add words that are not common."""
@@ -124,10 +135,6 @@ def parseText(text):
                 popularWords[word] += count
             else:
                 popularWords[word] += 1
-
-
-# global program options and arguments
-(options, args) = parse_cmd_line()
 
 def processRedditor(redditor):
     """Parse submissions and comments for the given Redditor."""
