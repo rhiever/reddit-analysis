@@ -135,11 +135,7 @@ def parseText(text):
 
 
 def processRedditor(redditor):
-    """Parse submissions and comments for the given Redditor.
-        
-        :param max_submissions: The maximum number of submissions to scrape.
-        
-        """
+    """Parse submissions and comments for the given Redditor."""
     for entry in with_status(redditor.get_overview(limit=max_submissions)):
         if isinstance(entry, praw.objects.Comment):  # Parse comment
             parseText(entry.body)
@@ -167,11 +163,7 @@ def processSubmission(submission, include_comments=True):
 
 
 def processSubreddit(subreddit):
-    """Parse comments, title text, and selftext in a given subreddit.
-        
-        :param max_submissions: The maximum number of submissions to scrape.
-        
-        """
+    """Parse comments, title text, and selftext in a given subreddit."""
     for submission in with_status(subreddit.get_top_from_month(limit=max_submissions)):
         try:
             processSubmission(submission)
