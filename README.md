@@ -8,14 +8,14 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
 
-## Prerequisites
+## Dependencies
 
-You must first install <a href="https://github.com/praw-dev/praw" target="_blank">PRAW</a> PRAW and any of its prerequisites before you can use this script. This script uses PRAW to scrape posts from Reddit.
+You must first install <a href="https://github.com/praw-dev/praw" target="_blank">PRAW</a> and any of its dependencies before you can use this script. This script uses PRAW to scrape posts from Reddit.
 
 Also note that this script currently only works on *nix machines. Windows users may use cygwin or similar *nix emulators.
 
 
-## Files
+## Files in this repository
 
 `word_freqs.py` scrapes a specific subreddit or Redditor and prints out all of the commonly-used words for the past month.
 
