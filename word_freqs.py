@@ -60,7 +60,7 @@ def parse_cmd_line():
                       default="month",
                       help="period to count words over: day/week/month/year/all. [default: month]")
 
-    parser.add_option("--l", "--limit",
+    parser.add_option("-l", "--limit",
                       action="store",
                       type="int",
                       dest="limit",
@@ -69,21 +69,21 @@ def parse_cmd_line():
                       "the number of submissions to count. "
                       "[default: 0]")
 
-    parser.add_option("--mt", "--maxthresh",
+    parser.add_option("-m", "--maxthresh",
                       action="store",
                       type="float",
                       dest="max_threshold",
-                      default="0.34",
+                      default=0.34,
                       help="maximum relative frequency in the text a word can "
                       "appear to be considered in word counts. prevents word spamming "
                       " in a single submission. [default: 0.34]")
 
-    parser.add_option("--cw",
+    parser.add_option("-o", "--only_one",
                       action="store_false",
                       dest="count_word_freqs",
                       help="only count a word once per text block (title, selftext, comment body).")
 
-    parser.add_option("--cwf",
+    parser.add_option("-c", "--count_all",
                       action="store_true",
                       dest="count_word_freqs",
                       default=True,
@@ -108,13 +108,6 @@ def parse_cmd_line():
         parser.error("Invalid period.")
 
     return (_options, _args)
-
-
-
-# global program options and arguments
-(options, args) = parse_cmd_line()
-
-
 
 
 def parseText(text):
@@ -190,14 +183,18 @@ def with_status(iterable):
 
 def main():
 
+    # global program options and arguments
+    global args, options
+    (options, args) = parse_cmd_line()
+    
     # open connection to Reddit
-    r = praw.Reddit(user_agent="bot by /u/{0}".format(str(args[0])))
+    r = praw.Reddit(user_agent="bot by /u/{0}".format(args[0]))
 
     # run analysis
-    sys.stderr.write("Analyzing {0}\n".format(str(args[1])))
+    sys.stderr.write("Analyzing {0}\n".format(args[1]))
     sys.stderr.flush()
 
-    target = str(args[1][3:])
+    target = args[1][3:]
     
     if options.is_subreddit:
         processSubreddit(r.get_subreddit(target))
