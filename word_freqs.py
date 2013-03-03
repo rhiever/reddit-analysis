@@ -45,12 +45,16 @@ with open("/usr/share/dict/words", "r") as dictionaryFile:
 excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
                  "k/year", "--", "/", "u/", ")x", "amp;c"]
 
+# Global Variable Initialization
+options = None
+
+
 def parse_cmd_line():
     # command-line argument parsing
-    usage = "usage: %prog [options] USERNAME TARGET\n\n"
-    usage += "USERNAME sets your Reddit username for the bot\n"
-    usage += "TARGET sets the subreddit or user to count word frequencies for.\n"
-    usage += "enter /r/TARGET for subreddits or /u/TARGET for users."
+    usage = ("usage: %prog [options] USERNAME TARGET\n\n"
+             "USERNAME sets your Reddit username for the bot\n"
+             "TARGET sets the subreddit or user to count word frequencies for."
+             "\nenter /r/TARGET for subreddits or /u/TARGET for users.")
     parser = OptionParser(usage=usage)
 
     parser.add_option("-p", "--period",
@@ -58,56 +62,52 @@ def parse_cmd_line():
                       type="string",
                       dest="period",
                       default="month",
-                      help="period to count words over: day/week/month/year/all. [default: month]")
+                      help=("period to count words over: "
+                            "day/week/month/year/all. [default: month]"))
 
     parser.add_option("-l", "--limit",
                       action="store",
                       type="int",
                       dest="limit",
-                      help="maximum number of submissions/comments to count word frequencies for. "
-                      "set LIMIT to 0 to count all submissions, otherwise specify "
-                      "the number of submissions to count. "
-                      "[default: 0]")
+                      help=("maximum number of submissions/comments to count "
+                            "word frequencies for. When omitted fetch all."))
 
     parser.add_option("-m", "--maxthresh",
                       action="store",
                       type="float",
                       dest="max_threshold",
                       default=0.34,
-                      help="maximum relative frequency in the text a word can "
-                      "appear to be considered in word counts. prevents word spamming "
-                      " in a single submission. [default: 0.34]")
+                      help=("maximum relative frequency in the text a word can"
+                            " appear to be considered in word counts. prevents"
+                            " word spamming in a single submission. "
+                            "[default: 0.34]"))
 
     parser.add_option("-o", "--only_one",
                       action="store_false",
                       dest="count_word_freqs",
-                      help="only count a word once per text block (title, selftext, comment body).")
-
-    parser.add_option("-c", "--count_all",
-                      action="store_true",
-                      dest="count_word_freqs",
                       default=True,
-                      help="count the number of times each word occurs. "
-                      "[default]")
+                      help=("only count a word once per text block (title, "
+                            "selftext, comment body) rather than incrementing"
+                            "the total for for each instance."))
 
-    (_options, _args) = parser.parse_args()
+    global options
+    options, args = parser.parse_args()
 
-    if len(_args) != 2:
+    if len(args) != 2:
         parser.error("Invalid number of arguments provided.")
-    
-    full_target = str(_args[1])
+    user, target = args
 
-    if full_target.startswith("/r/"):
-        _options.is_subreddit = True
-    elif full_target.startswith("/u/"):
-        _options.is_subreddit = False
+    if target.startswith("/r/"):
+        options.is_subreddit = True
+    elif target.startswith("/u/"):
+        options.is_subreddit = False
     else:
         parser.error("Invalid target.")
 
-    if _options.period not in ["day", "week", "month", "year", "all"]:
+    if options.period not in ["day", "week", "month", "year", "all"]:
         parser.error("Invalid period.")
 
-    return (_options, _args)
+    return user, target
 
 
 def parseText(text):
@@ -120,7 +120,6 @@ def parseText(text):
         if word and word not in commonWords:
             text_words[word] += 1
 
-
     # Add to popularWords list
     for word, count in text_words.items():
         if count / total <= options.max_threshold:
@@ -128,6 +127,7 @@ def parseText(text):
                 popularWords[word] += count
             else:
                 popularWords[word] += 1
+
 
 def processRedditor(redditor):
     """Parse submissions and comments for the given Redditor."""
@@ -159,14 +159,16 @@ def processSubmission(submission, include_comments=True):
 
 def processSubreddit(subreddit):
     """Parse comments, title text, and selftext in a given subreddit."""
-    
+
     # determine period to count the words over
     params = {'t': options.period}
-    for submission in with_status(subreddit.get_top(limit=options.limit, params=params)):
+    for submission in with_status(subreddit.get_top(limit=options.limit,
+                                                    params=params)):
         try:
             processSubmission(submission)
         except HTTPError as exc:
-            sys.stderr.write("\nSkipping submission {0} due to HTTP status {1} error. Continuing...\n"
+            sys.stderr.write("\nSkipping submission {0} due to HTTP status {1}"
+                             " error. Continuing...\n"
                              .format(submission.url, exc.response.status_code))
             continue
 
@@ -182,20 +184,17 @@ def with_status(iterable):
 
 
 def main():
+    user, target = parse_cmd_line()
 
-    # global program options and arguments
-    global args, options
-    (options, args) = parse_cmd_line()
-    
     # open connection to Reddit
-    r = praw.Reddit(user_agent="bot by /u/{0}".format(args[0]))
+    r = praw.Reddit(user_agent="bot by /u/{0}".format(user))
 
     # run analysis
-    sys.stderr.write("Analyzing {0}\n".format(args[1]))
+    sys.stderr.write("Analyzing {0}\n".format(target))
     sys.stderr.flush()
 
-    target = args[1][3:]
-    
+    target = target[3:]
+
     if options.is_subreddit:
         processSubreddit(r.get_subreddit(target))
     else:
