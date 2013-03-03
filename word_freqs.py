@@ -61,6 +61,13 @@ parser.add_option("-t", "--target",
                   help="subreddit or user to count word frequencies for. "
                   "enter /r/TARGET for subreddits or /u/TARGET for users.")
 
+parser.add_option("-p", "--period",
+                  action="store",
+                  type="string",
+                  dest="period",
+                  default="month",
+                  help="period to count words over: day/week/month/year/all. [default: month]")
+
 parser.add_option("--ms", "--maxsubs",
                   action="store",
                   type="int",
@@ -96,6 +103,7 @@ parser.add_option("--cwf",
 
 username = options.username
 full_target = options.target
+count_word_period = options.period
 max_submissions = options.max_submissions
 max_word_threshold = options.max_threshold
 count_word_freqs = options.count_word_freqs
@@ -105,9 +113,12 @@ if full_target.startswith("/r/"):
 elif full_target.startswith("/u/"):
     is_subreddit = False
 else:
-    raise Exception
+    raise Exception("\nInvalid target.\n")
 
 target = full_target[3:]
+
+if count_word_period not in ["day", "week", "month", "year", "all"]:
+    raise Exception("\nInvalid period.\n")
 
 if max_submissions == 0:
     max_submissions = None
@@ -164,7 +175,22 @@ def processSubmission(submission, include_comments=True):
 
 def processSubreddit(subreddit):
     """Parse comments, title text, and selftext in a given subreddit."""
-    for submission in with_status(subreddit.get_top_from_month(limit=max_submissions)):
+    
+    submission_list = []
+    
+    # determine period to count the words over
+    if count_word_period == "day":
+        submission_list = subreddit.get_top_from_day(limit=max_submissions)
+    elif count_word_period == "week":
+        submission_list = subreddit.get_top_from_week(limit=max_submissions)
+    elif count_word_period == "month":
+        submission_list = subreddit.get_top_from_month(limit=max_submissions)
+    elif count_word_period == "year":
+        submission_list = subreddit.get_top_from_year(limit=max_submissions)
+    elif count_word_period == "all":
+        submission_list = subreddit.get_top_from_all(limit=max_submissions)
+
+    for submission in with_status(submission_list):
         try:
             processSubmission(submission)
         except HTTPError as exc:
