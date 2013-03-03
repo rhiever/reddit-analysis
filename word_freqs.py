@@ -173,11 +173,11 @@ def processSubreddit(subreddit):
 
 
 def with_status(iterable):
-    """Wrap an interable outputing '.' for each item (up to 50 a line)."""
+    """Wrap an iterable outputing '.' for each item (up to 50 a line)."""
     for i, item in enumerate(iterable):
         sys.stderr.write('.')
         sys.stderr.flush()
-        if i % 50 == 49:
+        if i % 100 == 99:
             sys.stderr.write('\n')
         yield item
 
