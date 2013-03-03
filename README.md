@@ -23,7 +23,7 @@ script. This script uses PRAW to fetch data from reddit.
 Also note that this script currently only works on *nix machines. Windows users
 may use cygwin or similar *nix emulators.
 
-Also depends on 'words' package on linux systems.
+Also depends on `words` package on Linux systems.
 
 ## Files in this repository
 
