@@ -28,7 +28,7 @@ Also note that this script currently only works on *nix machines. Windows users 
 
 First make sure that `word_freqs.py` and `common-words.csv` are in the same directory. Next, enter:
 
-  python word_freqs.py -h
+    python word_freqs.py -h
   
 This command will detail all of the command line options and arguments for the script.
 
@@ -36,7 +36,7 @@ This command will detail all of the command line options and arguments for the s
 
 Enter the following command, then wait until the script finishes running.
 
-  python word_freqs.py YOUR-USERNAME /r/SUBREDDIT
+    python word_freqs.py YOUR-USERNAME /r/SUBREDDIT
   
 where `YOUR-USERNAME` is your Reddit username and `SUBREDDIT` is the subreddit you want to make the word cloud for. You must provide *both* arguments for the script to work properly.
 
@@ -49,7 +49,7 @@ To make a word cloud out of the words, copy all of the words into http://www.wor
 
 Enter the following command, then wait until the script finishes running.
 
-  python word_freqs.py YOUR-USERNAME /u/REDDITOR
+    python word_freqs.py YOUR-USERNAME /u/REDDITOR
   
 where `YOUR-USERNAME` is your Reddit username and `REDDITOR` is the Reddit user you want to make the word cloud for. You must provide *both* arguments for the script to work properly.
 
