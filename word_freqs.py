@@ -188,6 +188,7 @@ def main():
 
     # open connection to Reddit
     r = praw.Reddit(user_agent="bot by /u/{0}".format(user))
+    r.config.decode_html_entities = True
 
     # run analysis
     sys.stderr.write("Analyzing {0}\n".format(target))
