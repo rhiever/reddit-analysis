@@ -42,8 +42,7 @@ with open("/usr/share/dict/words", "r") as dictionaryFile:
         commonWords.add(dictionaryWord.strip(punctuation).lower())
 
 # put words here that you don't want to include in the word cloud
-excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
-                 "k/year", "--", "/", "u/", ")x", "amp;c"]
+excludedWords = ["/", "--", "...", "deleted", ")x"]
 
 # Global Variable Initialization
 options = None
