@@ -102,7 +102,12 @@ def processSubmission(submission, include_comments=True):
 def processSubreddit(subreddit, max_subs):
     """Parse all comments, title text, and selftext in a given subreddit."""
     for submission in with_status(subreddit.get_top_from_month(limit=max_subs)):
-        processSubmission(submission)
+        try:
+            processSubmission(submission)
+        except HTTPError as exc:
+            sys.stderr.write("\nSkipping submission {0} due to HTTP status {1} error. Continuing...\n"
+                             .format(submission.url, exc.response.status_code))
+            continue
 
 
 def with_status(iterable):
