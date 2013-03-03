@@ -72,10 +72,10 @@ def parseText(text, max_threshold=0.34, single_occurrence=False):
                 popularWords[word] += count
 
 
-def processRedditor(redditor, max_subs):
+def processRedditor(redditor, max_submissions):
     """Parse submissions and comments for the given Redditor.
         
-        :param max_subs: The maximum number of submissions to scrape.
+        :param max_submissions: The maximum number of submissions to scrape.
         
         """
     for entry in with_status(redditor.get_overview(limit=max_subs)):
@@ -104,10 +104,10 @@ def processSubmission(submission, include_comments=True):
         parseText(submission.selftext)
 
 
-def processSubreddit(subreddit, max_subs):
+def processSubreddit(subreddit, max_submissions):
     """Parse comments, title text, and selftext in a given subreddit.
         
-        :param max_subs: The maximum number of submissions to scrape.
+        :param max_submissions: The maximum number of submissions to scrape.
         
         """
     for submission in with_status(subreddit.get_top_from_month(limit=max_subs)):
