@@ -46,20 +46,11 @@ excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
                  "k/year", "--", "/", "u/", ")x", "amp;c"]
 
 # command-line argument parsing
-parser = OptionParser()
-
-parser.add_option("-u", "--username",
-                  action="store",
-                  type="string",
-                  dest="username",
-                  help="your Reddit username.")
-
-parser.add_option("-t", "--target",
-                  action="store",
-                  type="string",
-                  dest="target",
-                  help="subreddit or user to count word frequencies for. "
-                  "enter /r/TARGET for subreddits or /u/TARGET for users.")
+usage = "usage: %prog USERNAME TARGET [options]\n\n"
+usage += "USERNAME sets your Reddit username\n"
+usage += "TARGET sets the subreddit or user to count word frequencies for.\n"
+usage += "enter /r/TARGET for subreddits or /u/TARGET for users."
+parser = OptionParser(usage=usage)
 
 parser.add_option("-p", "--period",
                   action="store",
@@ -68,13 +59,12 @@ parser.add_option("-p", "--period",
                   default="month",
                   help="period to count words over: day/week/month/year/all. [default: month]")
 
-parser.add_option("--ms", "--maxsubs",
+parser.add_option("--l", "--limit",
                   action="store",
                   type="int",
-                  dest="max_submissions",
-                  default="0",
-                  help="maximum number of submissions to count word frequencies for. "
-                  "set MAX_SUBMISSIONS to 0 to count all submissions, otherwise specify "
+                  dest="limit",
+                  help="maximum number of submissions/comments to count word frequencies for. "
+                  "set LIMIT to 0 to count all submissions, otherwise specify "
                   "the number of submissions to count. "
                   "[default: 0]")
 
@@ -90,7 +80,7 @@ parser.add_option("--mt", "--maxthresh",
 parser.add_option("--cw",
                   action="store_false",
                   dest="count_word_freqs",
-                  help="only gather which words occur, but not counts.")
+                  help="only count a word once per text block (title, selftext, comment body).")
 
 parser.add_option("--cwf",
                   action="store_true",
@@ -99,12 +89,13 @@ parser.add_option("--cwf",
                   help="count the number of times each word occurs. "
                   "[default]")
 
-(options, args) = parser.parse_args()
+(options, args) = parser.parse_args(args=sys.argv[3:])
 
-username = options.username
-full_target = options.target
+username = str(sys.argv[1])
+full_target = str(sys.argv[2])
+
 count_word_period = options.period
-max_submissions = options.max_submissions
+limit = options.limit
 max_word_threshold = options.max_threshold
 count_word_freqs = options.count_word_freqs
 
@@ -119,10 +110,6 @@ target = full_target[3:]
 
 if count_word_period not in ["day", "week", "month", "year", "all"]:
     raise Exception("\nInvalid period.\n")
-
-if max_submissions == 0:
-    max_submissions = None
-
 
 
 def parseText(text):
@@ -147,7 +134,7 @@ def parseText(text):
 
 def processRedditor(redditor):
     """Parse submissions and comments for the given Redditor."""
-    for entry in with_status(redditor.get_overview(limit=max_submissions)):
+    for entry in with_status(redditor.get_overview(limit=limit)):
         if isinstance(entry, praw.objects.Comment):  # Parse comment
             parseText(entry.body)
         else:  # Parse submission
@@ -176,21 +163,9 @@ def processSubmission(submission, include_comments=True):
 def processSubreddit(subreddit):
     """Parse comments, title text, and selftext in a given subreddit."""
     
-    submission_list = []
-    
     # determine period to count the words over
-    if count_word_period == "day":
-        submission_list = subreddit.get_top_from_day(limit=max_submissions)
-    elif count_word_period == "week":
-        submission_list = subreddit.get_top_from_week(limit=max_submissions)
-    elif count_word_period == "month":
-        submission_list = subreddit.get_top_from_month(limit=max_submissions)
-    elif count_word_period == "year":
-        submission_list = subreddit.get_top_from_year(limit=max_submissions)
-    elif count_word_period == "all":
-        submission_list = subreddit.get_top_from_all(limit=max_submissions)
-
-    for submission in with_status(submission_list):
+    params = {'t': count_word_period}
+    for submission in with_status(subreddit.get_top(limit=limit, params=params)):
         try:
             processSubmission(submission)
         except HTTPError as exc:
