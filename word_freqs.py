@@ -102,10 +102,10 @@ def parse_cmd_line():
     elif full_target.startswith("/u/"):
         _options.is_subreddit = False
     else:
-        raise Exception("\nInvalid target.\n")
+        parser.error("Invalid target.")
 
     if _options.period not in ["day", "week", "month", "year", "all"]:
-        raise Exception("\nInvalid period.\n")
+        parser.error("Invalid period.")
 
     return (_options, _args)
 
