@@ -16,14 +16,25 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 ## Dependencies
 
-You must first install <a href="https://github.com/praw-dev/praw"
-target="_blank">PRAW</a> and any of its dependencies before you can use this
-script. This script uses PRAW to fetch data from reddit.
+You must first install the Python library if you do not have that already.
+Preferably, use the <a href="http://www.enthought.com/products/epd_free.php"
+target="_blank">Enthought Python Distribution</a> (EPD) for an easy install.
 
-Also note that this script currently only works on *nix machines. Windows users
+Next, you must install <a href="https://github.com/praw-dev/praw"
+target="_blank">PRAW</a> and any of its dependencies before you can use this
+script. This script uses PRAW to fetch data from reddit. Enter the following
+command into the terminal:
+
+    easy_install praw
+    
+You may need to put `sudo` in front of the above command if your system requires
+root access.
+
+Note that this script currently only works on *nix machines. Windows users
 may use cygwin or similar *nix emulators.
 
-Also depends on `words` package on Linux systems.
+On Linux systems, this script also depends on the `words` package.
+
 
 ## Files in this repository
 
