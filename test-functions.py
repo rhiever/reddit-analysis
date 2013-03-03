@@ -7,11 +7,10 @@ from collections import defaultdict
 class TestSequenceFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.user, self.target = wf.parse_cmd_line()
         wf.popularWords = defaultdict(int)
 
     def test_parse_cmd_line(self):
-        self.user, self.target = wf.parse_cmd_line()
+        self.user, self.target, options, args = wf.parse_cmd_line()
         self.assertEqual(self.user, sys.argv[1])
         self.assertEqual(self.target, sys.argv[2])
 
@@ -27,7 +26,7 @@ class TestSequenceFunctions(unittest.TestCase):
         for word, freq in popularWords.items():
             txt += str((word + " ") * freq)
 
-        wf.parseText(txt)
+        wf.parseText(txt, count_word_freqs=True, max_threshold=0.34)
         self.assertEqual(popularWords, wf.popularWords)
 
         # TODO: still need to test:
@@ -52,7 +51,7 @@ class TestSequenceFunctions(unittest.TestCase):
         # parse a fixed thread
         # TODO: make our own test thread
         sub = r.get_submission(url="http://www.reddit.com/r/pics/comments/92dd8/test_post_please_ignore/")
-        wf.processSubmission(sub)
+        wf.processSubmission(sub, count_word_freqs=True, max_threshold=0.34)
         
         # only look at the top 10 most-used words in the thread
         # TODO: look at all words used in thread
