@@ -22,6 +22,7 @@ import praw
 import string
 import sys
 from collections import defaultdict
+from optparse import OptionParser
 
 popularWords = defaultdict(int)
 commonWords = set()
@@ -121,32 +122,56 @@ def with_status(iterable):
 
 
 def main():
-    try:
-        username, target, max_subs = sys.argv[1:]
-        
-        if target.startswith('/r/'):
-            is_subreddit = True
-        elif target.startswith('/u/'):
-            is_subreddit = False
-        else:
-            raise Exception
     
-        target = target[3:]
-        max_subs = int(max_subs)
-        if max_subs == 0:
-            max_subs = None
+    # command-line argument parsing
+    parser = OptionParser()
+    
+    parser.add_option("-u", "--username",
+                      action="store",
+                      type="string",
+                      dest="username",
+                      help="your Reddit username.")
+    
+    parser.add_option("-t", "--target",
+                      action="store",
+                      type="string",
+                      dest="target",
+                      help="subreddit or user to count word frequencies for. "
+                      "enter /r/TARGET for subreddits or /u/TARGET for users.")
+    
+    parser.add_option("--ms", "--maxsubs",
+                      action="store",
+                      type="int",
+                      dest="max_subs",
+                      default="0",
+                      help="maximum number of submissions to count word frequencies for. "
+                      "set to 0 to count all submissions, otherwise specify the number of "
+                      "submissions to count. "
+                      "[default: 0]")
+    
+    (options, args) = parser.parse_args()
+    
+    username = options.username
+    full_target = options.target
+    max_subs = options.max_subs
+    
+    if full_target.startswith("/r/"):
+        is_subreddit = True
+    elif full_target.startswith("/u/"):
+        is_subreddit = False
+    else:
+        raise Exception
 
-    except:
-        print("Usage: subreddit_word_freqs.py YOUR_USERNAME TARGET MAX_SUBS\n\n"
-              "TARGET should either be of the format '/r/SUBREDDIT' or '/u/USERNAME'.\n\n"
-              "MAX_SUBS should be 0 for to scrape all submissions, otherwise specify the number.")
-        return 1
+    target = full_target[3:]
+    
+    if max_subs == 0:
+        max_subs = None
 
     # open connection to Reddit
     r = praw.Reddit(user_agent="bot by /u/{0}".format(username))
 
     # run analysis
-    sys.stderr.write('Analyzing {0}\n'.format(sys.argv[2]))
+    sys.stderr.write("Analyzing {0}\n".format(full_target))
     sys.stderr.flush()
 
     if is_subreddit:
