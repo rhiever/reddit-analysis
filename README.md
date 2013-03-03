@@ -32,27 +32,18 @@ First make sure that `word_freqs.py` and `common-words.csv` are in the same dire
   
 This command will detail all of the command line options and arguments for the script.
 
-### Make a word cloud for a subreddit
+### Make a word cloud for a subreddit or Redditor
 
-Enter the following command, then wait until the script finishes running.
+To count the most-used words for a subreddit, enter the following command:
 
     python word_freqs.py YOUR-USERNAME /r/SUBREDDIT
-  
-where `YOUR-USERNAME` is your Reddit username and `SUBREDDIT` is the subreddit you want to make the word cloud for. You must provide *both* arguments for the script to work properly.
-
-Once the script completes, it will save a file called `SUBREDDIT.csv` to the directory you ran it in. This file contains all of the commonly-used words from the subreddit you specified in the frequencies they were used.
-
-To make a word cloud out of the words, copy all of the words into http://www.wordle.net/create and click the Go button. Ta-da, you're done!
-
-
-### Make a word cloud for a Redditor
-
-Enter the following command, then wait until the script finishes running.
+    
+Similarly, for a Reddit user:
 
     python word_freqs.py YOUR-USERNAME /u/REDDITOR
   
-where `YOUR-USERNAME` is your Reddit username and `REDDITOR` is the Reddit user you want to make the word cloud for. You must provide *both* arguments for the script to work properly.
+where `YOUR-USERNAME` is your Reddit username and `SUBREDDIT` / `REDDITOR` is the subreddit / Redditor you want to make the word cloud for, and . You must provide *both* arguments for the script to work properly.
 
-Once the script completes, it will save a file called `user REDDITOR.csv` to the directory you ran it in. This file contains all of the commonly-used words by the Reddit user you specified in the frequencies they used them.
+Once the script completes, it will create a file called `SUBREDDIT.csv` to the directory you ran it in. This file contains all of the commonly-used words from the subreddit / Redditor you specified in the frequencies they were used.
 
 To make a word cloud out of the words, copy all of the words into http://www.wordle.net/create and click the Go button. Ta-da, you're done!
