@@ -112,7 +112,7 @@ def parseText(text, count_word_freqs, max_threshold):
     """
         Parse the passed in text and add words that are not common.
         
-        :arg `count_word_freqs`: only count a word once per text block (title,
+        :arg `count_word_freqs`: if False, only count a word once per text block (title,
                                  selftext, comment body) rather than incrementing
                                  the total for for each instance.
         
@@ -143,7 +143,7 @@ def processRedditor(redditor, limit, count_word_freqs, max_threshold):
         
         :arg `limit`: the maximum number of submissions to scrape from the subreddit
         
-        :arg `count_word_freqs`: only count a word once per text block (title,
+        :arg `count_word_freqs`: if False, only count a word once per text block (title,
                                  selftext, comment body) rather than incrementing
                                  the total for for each instance.
         
@@ -154,16 +154,18 @@ def processRedditor(redditor, limit, count_word_freqs, max_threshold):
     """
     for entry in with_status(redditor.get_overview(limit=limit)):
         if isinstance(entry, praw.objects.Comment):  # Parse comment
-            parseText(entry.body, count_word_freqs, max_threshold)
+            parseText(text=entry.body, count_word_freqs=count_word_freqs,
+                      max_threshold=max_threshold)
         else:  # Parse submission
-            processSubmission(entry, count_word_freqs, max_threshold, include_comments=False)
+            processSubmission(submission=entry, count_word_freqs=count_word_freqs,
+                              max_threshold=max_threshold, include_comments=False)
 
 
 def processSubmission(submission, count_word_freqs, max_threshold, include_comments=True):
     """
         Parse a submission's text and body (if applicable).
 
-        :arg `count_word_freqs`: only count a word once per text block (title,
+        :arg `count_word_freqs`: if False, only count a word once per text block (title,
                                  selftext, comment body) rather than incrementing
                                  the total for for each instance.
         
@@ -177,14 +179,17 @@ def processSubmission(submission, count_word_freqs, max_threshold, include_comme
     if include_comments:  # parse all the comments for the submission
         submission.replace_more_comments()
         for comment in praw.helpers.flatten_tree(submission.comments):
-            parseText(comment.body, count_word_freqs, max_threshold)
+            parseText(text=comment.body, count_word_freqs=count_word_freqs,
+                      max_threshold=max_threshold)
 
     # parse the title of the submission
-    parseText(submission.title, count_word_freqs, max_threshold)
+    parseText(text=submission.title, count_word_freqs=count_word_freqs,
+              max_threshold=max_threshold)
 
     # parse the selftext of the submission (if applicable)
     if submission.is_self:
-        parseText(submission.selftext, count_word_freqs, max_threshold)
+        parseText(text=submission.selftext, count_word_freqs=count_word_freqs,
+                  max_threshold=max_threshold)
 
 
 def processSubreddit(subreddit, period, limit, count_word_freqs, max_threshold):
@@ -195,7 +200,7 @@ def processSubreddit(subreddit, period, limit, count_word_freqs, max_threshold):
         
         :arg `limit`: the maximum number of submissions to scrape from the subreddit
         
-        :arg `count_word_freqs`: only count a word once per text block (title,
+        :arg `count_word_freqs`: if False, only count a word once per text block (title,
                                  selftext, comment body) rather than incrementing
                                  the total for for each instance.
         
@@ -206,9 +211,10 @@ def processSubreddit(subreddit, period, limit, count_word_freqs, max_threshold):
 
     # determine period to count the words over
     params = {'t': period}
-    for submission in with_status(subreddit.get_top(limit=limit, params=params)):
+    for submission in with_status(iterable=subreddit.get_top(limit=limit, params=params)):
         try:
-            processSubmission(submission, count_word_freqs, max_threshold)
+            processSubmission(submission=submission, count_word_freqs=count_word_freqs,
+                              max_threshold=max_threshold)
         except HTTPError as exc:
             sys.stderr.write("\nSkipping submission {0} due to HTTP status {1}"
                              " error. Continuing...\n"
@@ -244,11 +250,13 @@ def main():
     target = target[3:]
 
     if options.is_subreddit:
-        processSubreddit(r.get_subreddit(target), options.period, options.limit,
-                         options.count_word_freqs, options.max_threshold)
+        processSubreddit(subreddit=r.get_subreddit(target), period=options.period,
+                         limit=options.limit, count_word_freqs=options.count_word_freqs,
+                         max_threshold=options.max_threshold)
     else:
-        processRedditor(r.get_redditor(target), options.limit,
-                        options.count_word_freqs, options.max_threshold)
+        processRedditor(redditor=r.get_redditor(target), limit=options.limit,
+                        count_word_freqs=options.count_word_freqs,
+                        max_threshold=options.max_threshold)
 
     # build a string containing all the words for the word cloud software
     output = "\n"
