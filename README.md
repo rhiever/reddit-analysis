@@ -14,6 +14,7 @@ You must first install <a href="https://github.com/praw-dev/praw" target="_blank
 
 Also note that this script currently only works on *nix machines. Windows users may use cygwin or similar *nix emulators.
 
+Also depends on 'words' package on linux systems.
 
 ## Files in this repository
 
@@ -36,13 +37,13 @@ This command will detail all of the command line options and arguments for the s
 
 To count the most-used words for a subreddit, enter the following command:
 
-    python word_freqs.py YOUR-USERNAME /r/SUBREDDIT
+    python word_freqs.py YOUR-USERNAME /r/SUBREDDIT MAX_SUBS
     
 Similarly, for a Reddit user:
 
-    python word_freqs.py YOUR-USERNAME /u/REDDITOR
+    python word_freqs.py YOUR-USERNAME /u/REDDITOR MAX_SUBS
   
-where `YOUR-USERNAME` is your Reddit username and `SUBREDDIT` / `REDDITOR` is the subreddit / Redditor you want to make the word cloud for, and . You must provide *both* arguments for the script to work properly.
+where `YOUR-USERNAME` is your Reddit username and `SUBREDDIT` / `REDDITOR` is the subreddit / Redditor you want to make the word cloud for, and `MAX_SUBS` should be 0 for scraping all submissions, otherwise specify the number. You must provide *all three* arguments for the script to work properly.
 
 Once the script completes, it will create a file called `SUBREDDIT.csv` to the directory you ran it in. This file contains all of the commonly-used words from the subreddit / Redditor you specified in the frequencies they were used.
 
