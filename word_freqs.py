@@ -45,72 +45,66 @@ with open("/usr/share/dict/words", "r") as dictionaryFile:
 excludedWords = ["http://", "r/", "https://", "gt", "...", "deleted",
                  "k/year", "--", "/", "u/", ")x", "amp;c"]
 
-# command-line argument parsing
-usage = "usage: %prog [options] USERNAME TARGET\n\n"
-usage += "USERNAME sets your Reddit username\n"
-usage += "TARGET sets the subreddit or user to count word frequencies for.\n"
-usage += "enter /r/TARGET for subreddits or /u/TARGET for users."
-parser = OptionParser(usage=usage)
+def parse_cmd_line():
+    # command-line argument parsing
+    usage = "usage: %prog [options] USERNAME TARGET\n\n"
+    usage += "USERNAME sets your Reddit username for the bot\n"
+    usage += "TARGET sets the subreddit or user to count word frequencies for.\n"
+    usage += "enter /r/TARGET for subreddits or /u/TARGET for users."
+    parser = OptionParser(usage=usage)
 
-parser.add_option("-p", "--period",
-                  action="store",
-                  type="string",
-                  dest="period",
-                  default="month",
-                  help="period to count words over: day/week/month/year/all. [default: month]")
+    parser.add_option("-p", "--period",
+                      action="store",
+                      type="string",
+                      dest="period",
+                      default="month",
+                      help="period to count words over: day/week/month/year/all. [default: month]")
 
-parser.add_option("--l", "--limit",
-                  action="store",
-                  type="int",
-                  dest="limit",
-                  help="maximum number of submissions/comments to count word frequencies for. "
-                  "set LIMIT to 0 to count all submissions, otherwise specify "
-                  "the number of submissions to count. "
-                  "[default: 0]")
+    parser.add_option("--l", "--limit",
+                      action="store",
+                      type="int",
+                      dest="limit",
+                      help="maximum number of submissions/comments to count word frequencies for. "
+                      "set LIMIT to 0 to count all submissions, otherwise specify "
+                      "the number of submissions to count. "
+                      "[default: 0]")
 
-parser.add_option("--mt", "--maxthresh",
-                  action="store",
-                  type="float",
-                  dest="max_threshold",
-                  default="0.34",
-                  help="maximum relative frequency in the text a word can "
-                  "appear to be considered in word counts. prevents word spamming "
-                  " in a single submission. [default: 0.34]")
+    parser.add_option("--mt", "--maxthresh",
+                      action="store",
+                      type="float",
+                      dest="max_threshold",
+                      default="0.34",
+                      help="maximum relative frequency in the text a word can "
+                      "appear to be considered in word counts. prevents word spamming "
+                      " in a single submission. [default: 0.34]")
 
-parser.add_option("--cw",
-                  action="store_false",
-                  dest="count_word_freqs",
-                  help="only count a word once per text block (title, selftext, comment body).")
+    parser.add_option("--cw",
+                      action="store_false",
+                      dest="count_word_freqs",
+                      help="only count a word once per text block (title, selftext, comment body).")
 
-parser.add_option("--cwf",
-                  action="store_true",
-                  dest="count_word_freqs",
-                  default=True,
-                  help="count the number of times each word occurs. "
-                  "[default]")
+    parser.add_option("--cwf",
+                      action="store_true",
+                      dest="count_word_freqs",
+                      default=True,
+                      help="count the number of times each word occurs. "
+                      "[default]")
 
-(options, args) = parser.parse_args()
+    (o, a) = parser.parse_args()
 
-username = str(args[0])
-full_target = str(args[1])
+    full_target = str(a[1])
 
-count_word_period = options.period
-limit = options.limit
-max_word_threshold = options.max_threshold
-count_word_freqs = options.count_word_freqs
+    if full_target.startswith("/r/"):
+        o.is_subreddit = True
+    elif full_target.startswith("/u/"):
+        o.is_subreddit = False
+    else:
+        raise Exception("\nInvalid target.\n")
 
-if full_target.startswith("/r/"):
-    is_subreddit = True
-elif full_target.startswith("/u/"):
-    is_subreddit = False
-else:
-    raise Exception("\nInvalid target.\n")
+    if o.period not in ["day", "week", "month", "year", "all"]:
+        raise Exception("\nInvalid period.\n")
 
-target = full_target[3:]
-
-if count_word_period not in ["day", "week", "month", "year", "all"]:
-    raise Exception("\nInvalid period.\n")
-
+    return (o, a)
 
 def parseText(text):
     """Parse the passed in text and add words that are not common."""
@@ -125,16 +119,19 @@ def parseText(text):
 
     # Add to popularWords list
     for word, count in text_words.items():
-        if count / total <= max_word_threshold:
-            if count_word_freqs:
+        if count / total <= options.max_threshold:
+            if options.count_word_freqs:
                 popularWords[word] += count
             else:
                 popularWords[word] += 1
 
 
+# global program options and arguments
+(options, args) = parse_cmd_line()
+
 def processRedditor(redditor):
     """Parse submissions and comments for the given Redditor."""
-    for entry in with_status(redditor.get_overview(limit=limit)):
+    for entry in with_status(redditor.get_overview(limit=options.limit)):
         if isinstance(entry, praw.objects.Comment):  # Parse comment
             parseText(entry.body)
         else:  # Parse submission
@@ -164,8 +161,8 @@ def processSubreddit(subreddit):
     """Parse comments, title text, and selftext in a given subreddit."""
     
     # determine period to count the words over
-    params = {'t': count_word_period}
-    for submission in with_status(subreddit.get_top(limit=limit, params=params)):
+    params = {'t': options.period}
+    for submission in with_status(subreddit.get_top(limit=options.limit, params=params)):
         try:
             processSubmission(submission)
         except HTTPError as exc:
@@ -187,13 +184,15 @@ def with_status(iterable):
 def main():
 
     # open connection to Reddit
-    r = praw.Reddit(user_agent="bot by /u/{0}".format(username))
+    r = praw.Reddit(user_agent="bot by /u/{0}".format(str(args[0])))
 
     # run analysis
-    sys.stderr.write("Analyzing {0}\n".format(full_target))
+    sys.stderr.write("Analyzing {0}\n".format(str(args[1])))
     sys.stderr.flush()
 
-    if is_subreddit:
+    target = str(args[1][3:])
+    
+    if options.is_subreddit:
         processSubreddit(r.get_subreddit(target))
     else:
         processRedditor(r.get_redditor(target))
@@ -202,9 +201,9 @@ def main():
     output = ""
 
     # open output file to store the output string
-    outFileName = str(target) + ".csv"
+    outFileName = target + ".csv"
 
-    if not is_subreddit:
+    if not options.is_subreddit:
             outFileName = "user " + outFileName
 
     outFile = open(outFileName, "w")
