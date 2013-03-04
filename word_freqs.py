@@ -85,6 +85,11 @@ def parse_cmd_line():
                       default=False,
                       help="exclude words found in the dictionary")
 
+    parser.add_option("-v", "--verbose",
+                      action="store_true",
+                      default=False,
+                      help="print all program output to the terminal")
+
     options, args = parser.parse_args()
 
     if len(args) != 2:
@@ -292,7 +297,8 @@ def main():
 
     # print the series of words for the word cloud software
     # place this text into wordle.net
-    print output
+    if options.verbose:
+        print(output)
 
 
 if __name__ == '__main__':
