@@ -271,6 +271,27 @@ def main():
 
     outFile = open(outFileName, "w")
 
+    # combine similar words into single count
+    # e.g.: combine "picture," "pictures," and "picture's" into single count
+    for word, count in popularWords.items():
+        if word.endswith("'s"):
+            if popularWords[word[:-2]] > 0:
+                if popularWords[word[:-2]] > count:
+                    popularWords[word[:-2]] += popularWords[word]
+                    del popularWords[word]
+                else:
+                    popularWords[word] += popularWords[word[:-2]]
+                    del popularWords[word[:-2]]
+                       
+        elif word.endswith("s"):
+            if popularWords[word[:-1]] > 0:
+                if popularWords[word[:-1]] > count:
+                    popularWords[word[:-1]] += popularWords[word]
+                    del popularWords[word]
+                else:
+                    popularWords[word] += popularWords[word[:-1]]
+                    del popularWords[word[:-1]]
+
     for word in sorted(popularWords.keys()):
 
         # tweak this number depending on the subreddit
