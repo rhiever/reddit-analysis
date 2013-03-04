@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This is the Reddit Analysis project.
 #
 # Copyright 2013 Randal S. Olson.
@@ -17,6 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see http://www.gnu.org/licenses/.
 
+import os
 import praw
 import string
 import sys
@@ -24,14 +23,20 @@ from collections import defaultdict
 from optparse import OptionParser
 from requests.exceptions import HTTPError
 
+__version__ = '0.1'
+
+PACKAGE_DIR = os.path.dirname(__file__)
+
 popularWords = defaultdict(int)
 commonWords = set()
 
 # punctuation to strip from words
 punctuation = " " + string.punctuation + "\n"
 
+
+
 # load a list of common words to ignore
-for line in open("common-words.txt", "r"):
+for line in open(os.path.join(PACKAGE_DIR, "words", "common-words.txt"), "r"):
     commonWords.add(line.strip(punctuation).lower())
 
 # put words here that you don't want to include in the word cloud
@@ -113,7 +118,8 @@ def parse_cmd_line():
         parser.error("Invalid period.")
 
     if options.include_dictionary:
-        for line in open("dict-words.txt", "r"):
+        for line in open(os.path.join(PACKAGE_DIR, "words", "dict-words.txt"),
+                         "r"):
             commonWords.add(line.strip(punctuation).lower())
     
     return user, target, options
