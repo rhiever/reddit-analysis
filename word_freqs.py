@@ -107,9 +107,9 @@ def parse_cmd_line():
         parser.error("Invalid period.")
 
     if not options.exclude_dictionary:
-        for line in open("/usr/share/dict/words", "r"):
+        for line in open("dict-words.txt", "r"):
             commonWords.add(line.strip(punctuation).lower())
-
+    
     return user, target, options
 
 
