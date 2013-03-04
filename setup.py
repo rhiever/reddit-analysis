@@ -20,7 +20,7 @@ setup(name=PACKAGE_NAME,
                    'subreddits and users on reddit.'),
       entry_points={'console_scripts':
                         ['word_freqs={0}:main'.format(PACKAGE_NAME),]},
-      install_requires=['praw>=2.0.11'],
+      install_requires=['praw>=2.0.11', 'update_checker>=0.5'],
       license='GPLv3',
       long_description=README,
       packages=[PACKAGE_NAME],
