@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see http://www.gnu.org/licenses/.
 
-import csv
 import praw
 import string
 import sys
@@ -32,14 +31,8 @@ commonWords = set()
 punctuation = " " + string.punctuation + "\n"
 
 # load a list of common words to ignore
-with open("common-words.csv", "r") as commonWordsFile:
-    for commonWordFileLine in csv.reader(commonWordsFile):
-        for commonWord in commonWordFileLine:
-            commonWords.add(commonWord.strip(punctuation).lower())
-
-with open("/usr/share/dict/words", "r") as dictionaryFile:
-    for dictionaryWord in dictionaryFile:
-        commonWords.add(dictionaryWord.strip(punctuation).lower())
+for line in open("common-words.txt", "r"):
+    commonWords.add(line.strip(punctuation).lower())
 
 # put words here that you don't want to include in the word cloud
 excludedWords = ["/", "--", "...", "deleted", ")x"]
@@ -47,7 +40,7 @@ excludedWords = ["/", "--", "...", "deleted", ")x"]
 
 def parse_cmd_line():
     """Command-line argument parsing."""
-    
+
     usage = ("usage: %prog [options] USERNAME TARGET\n\n"
              "USERNAME sets your Reddit username for the bot\n"
              "TARGET sets the subreddit or user to count word frequencies for."
@@ -87,6 +80,11 @@ def parse_cmd_line():
                             "selftext, comment body) rather than incrementing"
                             "the total for for each instance."))
 
+    parser.add_option("-x", "--exclude-dictionary",
+                      action="store_true",
+                      default=False,
+                      help="exclude words found in the dictionary")
+
     options, args = parser.parse_args()
 
     if len(args) != 2:
@@ -102,6 +100,10 @@ def parse_cmd_line():
 
     if options.period not in ["day", "week", "month", "year", "all"]:
         parser.error("Invalid period.")
+
+    if options.exclude_dictionary:
+        for line in open("/usr/share/dict/words", "r"):
+            commonWords.add(line.strip(punctuation).lower())
 
     return user, target, options
 

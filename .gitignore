@@ -1,8 +1,5 @@
-
 .DS_Store
-
+*~
+*.csv
 *.ipynb
-
-word_freqs.pyc
-
-*.py~
+*.py[co]
