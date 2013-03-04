@@ -307,9 +307,11 @@ def main():
     # open output file to store the output string
     outFileName = target + ".csv"
 
-    if not options.is_subreddit:
-            outFileName = "user-" + outFileName
-
+    if options.is_subreddit:
+        outFileName = "user-" + outFileName
+    else:
+        outFileName = "subreddit-" + outFileName
+        
     outFile = open(outFileName, "w")
 
     # combine similar words into single count
