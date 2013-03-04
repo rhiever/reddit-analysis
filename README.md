@@ -1,5 +1,11 @@
 # Reddit Analysis project
 
+Please send all requests to make a Most-Used Words (MUW) word cloud to http://www.reddit.com/r/MUWs/
+
+Feel free to post the MUWs you've made there, too.
+
+## License
+
 Copyright 2013 Randal S. Olson.
 
 This program is free software: you can redistribute it and/or modify it under
