@@ -47,7 +47,7 @@ for line in open(os.path.join(PACKAGE_DIR, "words", "common-words.txt"), "r"):
 # This should be used pretty much to just discard links
 URL_RE = re.compile('|'.join([
             '^(http(s)?://|www\.)',  # begins with
-            '\.(com|it|net|org)/?$'  # ends with
+            '\.(com|it|net|org)($|/)'  # ends with tld or is followed by /
             ]))
 
 # A regular expression to split tokens into smaller tokens.

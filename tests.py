@@ -89,6 +89,7 @@ class TestSequenceFunctions(unittest.TestCase):
         # Test domain removal
         self.assertEqual(['a', 'b'], tk('a reddit.com b'))
         self.assertEqual(['a', 'b'], tk('a reddit.com/ b'))
+        self.assertEqual(['a', 'b'], tk('a imgur.com/somefile.jpg b'))
 
         # Test handling of r/ and u/
         self.assertEqual(['a', 'r', 'muws', 'b'], tk('a r/muws b'))
