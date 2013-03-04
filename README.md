@@ -26,29 +26,25 @@ You must first install the Python library if you do not have that already.
 Preferably, use the <a href="http://www.enthought.com/products/epd_free.php"
 target="_blank">Enthought Python Distribution</a> (EPD) for an easy install.
 
-Next, you must install <a href="https://github.com/praw-dev/praw"
-target="_blank">PRAW</a> and any of its dependencies before you can use this
-script. This script uses PRAW to fetch data from reddit. Enter the following
-command into the terminal:
+Next, you can install this package. Enter the following command into the
+terminal:
 
-    easy_install praw
-    
-You may need to put `sudo` in front of the above command if your system requires
-root access.
+    easy_install redditanalysis
 
-Note that this script currently only works on *nix machines. Windows users
-may use cygwin or similar *nix emulators.
+You may need to put `sudo` in front of the above command if your system
+requires root access.
 
-On Linux systems, this script also depends on the `words` package.
+If you want to install the lastest development version from github first
+clone the package and then run:
+
+    python setup.py install
 
 
 ## Files in this repository
 
-`word_freqs.py` scrapes a specific subreddit or redditor and prints out all of
-the commonly-used words for the past month.
-
-`common-words.txt` is a data file containing a list of words that should be
-considered common. Note that this list is not final and is constantly changing.
+`redditanalysis/common-words.txt` is a data file containing a list of words
+that should be considered common. Note that this list is not final and is
+constantly changing.
 
 `data_dumps/*.csv` are all of the word dumps we've added to the repo. Usually
 we only add the data dumps by request.
@@ -56,10 +52,10 @@ we only add the data dumps by request.
 
 ## Usage
 
-First make sure that `word_freqs.py` and `common-words.txt` are in the same
-directory. Next, enter:
+Once installed running the following on your command line should produce a
+usage message:
 
-    python word_freqs.py --help
+    word_freqs --help
 
 This command will detail all of the command line options and arguments for the
 script.
@@ -69,11 +65,11 @@ script.
 To count the most-used words for a subreddit over the last month, enter the
 following command:
 
-    python word_freqs.py YOUR-USERNAME /r/SUBREDDIT
+    word_freqs YOUR-USERNAME /r/SUBREDDIT
 
 Similarly, for a reddit user:
 
-    python word_freqs.py YOUR-USERNAME /u/REDDITOR
+    word_freqs YOUR-USERNAME /u/REDDITOR
 
 where `YOUR-USERNAME` is your reddit username and `SUBREDDIT` / `REDDITOR` is
 the subreddit / redditor you want to make the word cloud for. You
