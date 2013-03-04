@@ -1,5 +1,10 @@
 .DS_Store
 *~
 *.csv
+*.egg
+*.egg-info/
 *.ipynb
 *.py[co]
+_build/
+build/
+dist/

@@ -1,6 +1,6 @@
 import sys
 import unittest
-import word_freqs as wf
+import redditanalysis as wf
 import praw
 from collections import defaultdict
 
