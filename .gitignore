@@ -4,3 +4,5 @@
 *.ipynb
 
 word_freqs.pyc
+
+*.py~

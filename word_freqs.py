@@ -109,11 +109,11 @@ def parse_cmd_line():
 def parseText(text, count_word_freqs, max_threshold):
     """Parse the passed in text and add words that are not common.
         
-    :param `count_word_freqs`: if False, only count a word once per text block
-    (title, selftext, comment body) rather than incrementing the total for each instance.
+    :param count_word_freqs: if False, only count a word once per text block
+        (title, selftext, comment body) rather than incrementing the total for each instance.
         
-    :param `max_threshold`: maximum relative frequency in the text a word can
-    appear to be considered in word counts. prevents word spamming in a single submission.
+    :param max_threshold: maximum relative frequency in the text a word can
+        appear to be considered in word counts. prevents word spamming in a single submission.
 
     """
     total = 0.0  # intentionally a float
@@ -136,13 +136,13 @@ def parseText(text, count_word_freqs, max_threshold):
 def processRedditor(redditor, limit, count_word_freqs, max_threshold):
     """Parse submissions and comments for the given Redditor.
         
-    :param `limit`: the maximum number of submissions to scrape from the subreddit
+    :param limit: the maximum number of submissions to scrape from the subreddit
         
-    :param `count_word_freqs`: if False, only count a word once per text block
-    (title, selftext, comment body) rather than incrementing the total for for each instance.
+    :param count_word_freqs: if False, only count a word once per text block
+        (title, selftext, comment body) rather than incrementing the total for for each instance.
     
-    :param `max_threshold`: maximum relative frequency in the text a word can
-    appear to be considered in word counts. prevents word spamming in a single submission.
+    :param max_threshold: maximum relative frequency in the text a word can
+        appear to be considered in word counts. prevents word spamming in a single submission.
         
     """
     for entry in with_status(iterable=redditor.get_overview(limit=limit)):
@@ -157,13 +157,13 @@ def processRedditor(redditor, limit, count_word_freqs, max_threshold):
 def processSubmission(submission, count_word_freqs, max_threshold, include_comments=True):
     """Parse a submission's text and body (if applicable).
 
-    :param `count_word_freqs`: if False, only count a word once per text block (title,
-    selftext, comment body) rather than incrementing the total for for each instance.
+    :param count_word_freqs: if False, only count a word once per text block (title,
+        selftext, comment body) rather than incrementing the total for for each instance.
     
-    :param `max_threshold`: maximum relative frequency in the text a word can
-    appear to be considered in word counts. prevents word spamming in a single submission.
+    :param max_threshold: maximum relative frequency in the text a word can
+        appear to be considered in word counts. prevents word spamming in a single submission.
     
-    :param `include_comments`: include the submission's comments when True
+    :param include_comments: include the submission's comments when True
 
     """
     if include_comments:  # parse all the comments for the submission
@@ -185,15 +185,15 @@ def processSubmission(submission, count_word_freqs, max_threshold, include_comme
 def processSubreddit(subreddit, period, limit, count_word_freqs, max_threshold):
     """Parse comments, title text, and selftext in a given subreddit.
     
-    :param `period`: the time period to scrape the subreddit over (day, week, month, etc.)
+    :param period: the time period to scrape the subreddit over (day, week, month, etc.)
     
-    :param `limit`: the maximum number of submissions to scrape from the subreddit
+    :param limit: the maximum number of submissions to scrape from the subreddit
     
-    :param `count_word_freqs`: if False, only count a word once per text block
-    (title, selftext, comment body) rather than incrementing the total for for each instance.
+    :param count_word_freqs: if False, only count a word once per text block
+        (title, selftext, comment body) rather than incrementing the total for for each instance.
     
-    :param `max_threshold`: maximum relative frequency in the text a word can
-    appear to be considered in word counts. prevents word spamming in a single submission.
+    :param max_threshold: maximum relative frequency in the text a word can
+        appear to be considered in word counts. prevents word spamming in a single submission.
     
     """
 
