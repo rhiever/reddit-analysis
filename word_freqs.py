@@ -53,14 +53,16 @@ def parse_cmd_line():
                       dest="period",
                       default="month",
                       help=("period to count words over: "
-                            "day/week/month/year/all. [default: month]"))
+                            "day/week/month/year/all"
+                            " [default: month]"))
 
     parser.add_option("-l", "--limit",
                       action="store",
                       type="int",
                       dest="limit",
                       help=("maximum number of submissions/comments to count "
-                            "word frequencies for. When omitted fetch all."))
+                            "word frequencies for"
+                            " [default: no limit]"))
 
     parser.add_option("-m", "--maxthresh",
                       action="store",
@@ -68,9 +70,9 @@ def parse_cmd_line():
                       dest="max_threshold",
                       default=0.34,
                       help=("maximum relative frequency in the text a word can"
-                            " appear to be considered in word counts. prevents"
-                            " word spamming in a single submission. "
-                            "[default: 0.34]"))
+                            " appear to be considered in word counts (prevents"
+                            " word spamming in a single submission)"
+                            " [default: 0.34]"))
 
     parser.add_option("-o", "--only_one",
                       action="store_false",
@@ -78,17 +80,21 @@ def parse_cmd_line():
                       default=True,
                       help=("only count a word once per text block (title, "
                             "selftext, comment body) rather than incrementing"
-                            "the total for for each instance."))
+                            "the total for for each instance"
+                            " [default: false]"))
 
-    parser.add_option("-x", "--exclude-dictionary",
+    parser.add_option("-i", "--include-dictionary",
                       action="store_true",
                       default=False,
-                      help="exclude words found in the dictionary")
+                      help=("exclude words found in the dictionary from the"
+                            " word cloud"
+                            " [default: false]"))
 
     parser.add_option("-v", "--verbose",
                       action="store_true",
                       default=False,
-                      help="print all program output to the terminal")
+                      help=("print all program output to the terminal"
+                            " [default: false]"))
 
     options, args = parser.parse_args()
 
@@ -106,7 +112,7 @@ def parse_cmd_line():
     if options.period not in ["day", "week", "month", "year", "all"]:
         parser.error("Invalid period.")
 
-    if not options.exclude_dictionary:
+    if options.include_dictionary:
         for line in open("dict-words.txt", "r"):
             commonWords.add(line.strip(punctuation).lower())
     
