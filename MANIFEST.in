@@ -1,2 +1,2 @@
 include README.md
-recursive-include redditwc/words *
+recursive-include redditanalysis/words *
