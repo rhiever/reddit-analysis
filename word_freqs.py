@@ -106,7 +106,7 @@ def parse_cmd_line():
     if options.period not in ["day", "week", "month", "year", "all"]:
         parser.error("Invalid period.")
 
-    if options.exclude_dictionary:
+    if not options.exclude_dictionary:
         for line in open("/usr/share/dict/words", "r"):
             commonWords.add(line.strip(punctuation).lower())
 
