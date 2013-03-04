@@ -35,16 +35,28 @@ You may need to put `sudo` in front of the above command if your system
 requires root access.
 
 If you want to install the lastest development version from github first
-clone the package and then run:
+clone the package:
+
+    git clone https://github.com/rhiever/reddit-analysis.git
+
+change into the `reddit-analysis` directory:
+
+    cd reddit-analysis
+
+then run the update script:
 
     python setup.py install
 
 
 ## Files in this repository
 
-`redditanalysis/common-words.txt` is a data file containing a list of words
+`redditanalysis/words/common-words.txt` is a data file containing a list of words
 that should be considered common. Note that this list is not final and is
 constantly changing.
+
+`redditanalysis/words/dict-words.txt` is a data file containing a list of words
+from a dictionary. It is only recommended to use this file (with the `-x` option)
+if you want `word_freqs` to pick out very uncommon words.
 
 `data_dumps/*.csv` are all of the word dumps we've added to the repo. Usually
 we only add the data dumps by request.
@@ -52,13 +64,13 @@ we only add the data dumps by request.
 
 ## Usage
 
-Once installed running the following on your command line should produce a
-usage message:
+Once installed, run the following on your command line to produce a usage
+message:
 
     word_freqs --help
 
 This command will detail all of the command line options and arguments for the
-script.
+`word_freqs`.
 
 ### Make a word cloud for a subreddit or redditor
 
