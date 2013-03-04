@@ -47,7 +47,7 @@ On Linux systems, this script also depends on the `words` package.
 `word_freqs.py` scrapes a specific subreddit or redditor and prints out all of
 the commonly-used words for the past month.
 
-`common-words.csv` is a data file containing a list of words that should be
+`common-words.txt` is a data file containing a list of words that should be
 considered common. Note that this list is not final and is constantly changing.
 
 `data_dumps/*.csv` are all of the word dumps we've added to the repo. Usually
@@ -56,7 +56,7 @@ we only add the data dumps by request.
 
 ## Usage
 
-First make sure that `word_freqs.py` and `common-words.csv` are in the same
+First make sure that `word_freqs.py` and `common-words.txt` are in the same
 directory. Next, enter:
 
     python word_freqs.py --help
@@ -85,4 +85,4 @@ the commonly-used words from the subreddit / redditor you specified in the
 frequencies they were used.
 
 To make a word cloud out of the words, copy all of the words into
-http://www.wordle.net/create and click the Go button. Ta-da, you're done!
+http://www.wordle.net/compose and click the Go button. Ta-da, you're done!
