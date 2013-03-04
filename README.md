@@ -82,10 +82,3 @@ frequencies they were used.
 
 To make a word cloud out of the words, copy all of the words into
 http://www.wordle.net/compose and click the Go button. Ta-da, you're done!
-
-<form action="http://www.wordle.net/advanced" method="POST">
-    <textarea name="text" style="display:none">
-        Paste text here
-    </textarea>
-    <input type="submit">
-</form>
