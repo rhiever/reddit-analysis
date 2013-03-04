@@ -287,9 +287,8 @@ def main():
             # add as many copies of the word as it was mentioned in the
             # subreddit
             if pri:
-                txt = ((word + " ") * popularWords[word])
-                txt = txt.encode("UTF-8").strip(" ")
-                txt += " "
+                txt = word + ":" + str(popularWords[word]) + "\n"
+                txt = txt.encode("UTF-8")
                 output += txt
                 outFile.write(txt)
 
