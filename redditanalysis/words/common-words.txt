@@ -6,6 +6,7 @@ across
 after
 again
 against
+ago
 ain't
 all
 almost
@@ -151,6 +152,8 @@ had
 hadn't
 haha
 has
+happen
+happened
 hasn't
 have
 haven't
@@ -269,6 +272,7 @@ o
 of
 off
 often
+oh
 old
 older
 oldest
