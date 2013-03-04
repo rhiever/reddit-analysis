@@ -19,7 +19,9 @@ import os
 import praw
 import string
 import sys
+from BeautifulSoup import BeautifulSoup
 from collections import defaultdict
+from markdown import markdown
 from optparse import OptionParser
 from requests.exceptions import HTTPError
 from update_checker import update_check
@@ -126,16 +128,25 @@ def parse_cmd_line():
     return user, target, options
 
 
-def parseText(text, count_word_freqs, max_threshold):
+def parseText(text, count_word_freqs, max_threshold, is_markdown=True):
     """Parse the passed in text and add words that are not common.
-        
+
     :param count_word_freqs: if False, only count a word once per text block
-        (title, selftext, comment body) rather than incrementing the total for each instance.
-        
+        (title, selftext, comment body) rather than incrementing the total for
+        each instance.
+
     :param max_threshold: maximum relative frequency in the text a word can
-        appear to be considered in word counts. prevents word spamming in a single submission.
+        appear to be considered in word counts. prevents word spamming in a
+        single submission.
+
+    :param is_markdown: When True, parse as markdown and extract the text.
 
     """
+    if is_markdown:
+        soup = BeautifulSoup(markdown(text),
+                             convertEntities=BeautifulSoup.HTML_ENTITIES)
+        text = ''.join(soup.findAll(text=True))
+
     total = 0.0  # intentionally a float
     text_words = defaultdict(int)
     for word in text.split():  # Split on all whitespace
@@ -194,7 +205,7 @@ def processSubmission(submission, count_word_freqs, max_threshold, include_comme
 
     # parse the title of the submission
     parseText(text=submission.title, count_word_freqs=count_word_freqs,
-              max_threshold=max_threshold)
+              max_threshold=max_threshold, is_markdown=False)
 
     # parse the selftext of the submission (if applicable)
     if submission.is_self:
