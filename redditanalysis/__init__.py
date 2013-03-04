@@ -17,6 +17,7 @@
 
 import os
 import praw
+import re
 import string
 import sys
 from BeautifulSoup import BeautifulSoup
@@ -42,9 +43,15 @@ punctuation = " " + string.punctuation + "\n"
 for line in open(os.path.join(PACKAGE_DIR, "words", "common-words.txt"), "r"):
     commonWords.add(line.strip(punctuation).lower())
 
-# put words here that you don't want to include in the word cloud
-excludedWords = ["/", "--", "...", "deleted", ")x"]
+# Tokens that match this regular expression are immediately discared
+# This should be used pretty much to just discard links
+URL_RE = re.compile('|'.join([
+            '^(http(s)?://|www\.)',  # begins with
+            '\.(com|it|net|org)/?$'  # ends with
+            ]))
 
+# A regular expression to split tokens into smaller tokens.
+SPLIT_RE = re.compile('|'.join(["/", r"\\"]))
 
 def parse_cmd_line():
     """Command-line argument parsing."""
@@ -149,11 +156,10 @@ def parseText(text, count_word_freqs, max_threshold, is_markdown=True):
 
     total = 0.0  # intentionally a float
     text_words = defaultdict(int)
-    for word in text.split():  # Split on all whitespace
-        word = word.strip(punctuation).lower()
+    for token in tokenize(text):
         total += 1
-        if word and word not in commonWords:
-            text_words[word] += 1
+        if token not in commonWords:
+            text_words[token] += 1
 
     # Add to popularWords list
     for word, count in text_words.items():
@@ -243,6 +249,20 @@ def processSubreddit(subreddit, period, limit, count_word_freqs, max_threshold):
                              .format(submission.url))
 
 
+def tokenize(text):
+    """Return individual tokens from a block of text."""
+    for token in text.split():  # first split on whitespace
+        if URL_RE.search(token):  # Ignore invalid tokens
+            continue
+        for sub_token in SPLIT_RE.split(token):
+            sub_token = sub_token.strip(punctuation).lower()
+            if not sub_token:
+                continue
+            if sub_token.endswith("'s"):  # Fix possessive form
+                sub_token = sub_token[:-2]
+            yield sub_token
+
+
 def with_status(iterable):
     """Wrap an iterable outputting '.' for each item (up to 100 per line)."""
     for i, item in enumerate(iterable):
@@ -293,55 +313,32 @@ def main():
     outFile = open(outFileName, "w")
 
     # combine similar words into single count
-    # e.g.: combine "picture," "pictures," and "picture's" into single count
+    # e.g.: combine "picture," and "pictures" into single count
     for word, count in popularWords.items():
-        
-        if word.endswith("'s"):
-            
+        if word.endswith("s"):
             # if the shorter form of the word was used
-            if popularWords[word[:-2]] > 0:
+            singular = word[:-1]
+            if popularWords[singular] > 0:
 
                 # combine the count into the most-used form of the word
-                if popularWords[word[:-2]] > count:
-                    popularWords[word[:-2]] += popularWords[word]
+                if popularWords[singular] > count:
+                    popularWords[singular] += popularWords[word]
                     del popularWords[word]
                 else:
-                    popularWords[word] += popularWords[word[:-2]]
-                    del popularWords[word[:-2]]
-                       
-        elif word.endswith("s"):
-
-            # if the shorter form of the word was used
-            if popularWords[word[:-1]] > 0:
-
-                # combine the count into the most-used form of the word
-                if popularWords[word[:-1]] > count:
-                    popularWords[word[:-1]] += popularWords[word]
-                    del popularWords[word]
-                else:
-                    popularWords[word] += popularWords[word[:-1]]
-                    del popularWords[word[:-1]]
+                    popularWords[word] += popularWords[singular]
+                    del popularWords[singular]
 
     for word in sorted(popularWords.keys()):
 
         # tweak this number depending on the subreddit
         # some subreddits end up having TONS of words and it seems to overflow
         # the Python string buffer
-        if popularWords[word] > 2:
+        if popularWords[word] > 5:
             pri = True
 
-            # do not print a word if it is in the excluded word list
-            for ew in excludedWords:
-                if ew in word:
-                    pri = False
-                    break
-
             # don't print the word if it's just a number
-            try:
-                int(word)
+            if word.isdigit():
                 pri = False
-            except:
-                pass
 
             # add as many copies of the word as it was mentioned in the
             # subreddit

@@ -71,10 +71,48 @@ class TestSequenceFunctions(unittest.TestCase):
         TODO: make our own test subreddit
         """
 
+    def test_tokenize(self):
+        def tk(text):
+            return list(wf.tokenize(text))
+
+        # Test whitespace handling
+        self.assertEqual(['hello', 'world'], tk('hello world'))
+        self.assertEqual(['hello', 'world'], tk('hello  world'))
+        self.assertEqual(['hello', 'world'], tk('hello\nworld'))
+        self.assertEqual(['hello', 'world'], tk('hello\rworld'))
+        self.assertEqual(['hello', 'world'], tk('hello\tworld'))
+
+        # Test url removal
+        self.assertEqual(['a', 'b'], tk('a http://reddit.com/foobar b'))
+        self.assertEqual(['a', 'b'], tk('a https://github.com/rhiever b'))
+
+        # Test domain removal
+        self.assertEqual(['a', 'b'], tk('a reddit.com b'))
+        self.assertEqual(['a', 'b'], tk('a reddit.com/ b'))
+
+        # Test handling of r/ and u/
+        self.assertEqual(['a', 'r', 'muws', 'b'], tk('a r/muws b'))
+        self.assertEqual(['a', 'r', 'muws', 'b'], tk('a /r/muws b'))
+        self.assertEqual(['a', 'r', 'muws', 'b'], tk('a /r/muws/ b'))
+        self.assertEqual(['a', 'u', 'bboe', 'b'], tk('a u/bboe b'))
+        self.assertEqual(['a', 'u', 'bboe', 'b'], tk('a /u/bboe b'))
+        self.assertEqual(['a', 'u', 'bboe', 'b'], tk('a /u/bboe/ b'))
+
+        # Test possessive remoal
+        self.assertEqual(['a', 'bboe', 'b'], tk('a bboe\'s b'))
+
+        # Test puntuation removal
+        self.assertEqual(['hello', 'world'], tk('!hello world'))
+        self.assertEqual(['hello', 'world'], tk('hello world!'))
+
+        # Test subtokens
+        self.assertEqual(['hello', 'world'], tk('hello/world'))
+        self.assertEqual(['hello', 'world'], tk(r'hello\world'))
+
     def test_with_status(self):
         """
         Is this even a function that should be tested?
         """
 
 if __name__ == '__main__':
-    unittest.main(argv=[sys.argv[0]])
+    unittest.main()
