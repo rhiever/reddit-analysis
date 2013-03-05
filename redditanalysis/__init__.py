@@ -27,7 +27,7 @@ from optparse import OptionParser
 from requests.exceptions import HTTPError
 from update_checker import update_check
 
-__version__ = '0.1'
+__version__ = '0.1.1'
 
 PACKAGE_DIR = os.path.dirname(__file__)
 
