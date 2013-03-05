@@ -308,17 +308,17 @@ def main():
     outFileName = target + ".csv"
 
     if options.is_subreddit:
-        outFileName = "user-" + outFileName
-    else:
         outFileName = "subreddit-" + outFileName
+    else:
+        outFileName = "user-" + outFileName
         
     outFile = open(outFileName, "w")
 
     # combine similar words into single count
-    # e.g.: combine "picture," and "pictures" into single count
+    # e.g.: combine "picture" and "pictures" into single count
     for word, count in popularWords.items():
         if word.endswith("s"):
-            # if the shorter form of the word was used
+            # if the singular form of the word was used
             singular = word[:-1]
             if popularWords[singular] > 0:
 
