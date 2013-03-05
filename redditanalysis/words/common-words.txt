@@ -3,6 +3,7 @@ able
 about
 above
 across
+actually
 after
 again
 against
@@ -12,6 +13,7 @@ all
 almost
 alone
 along
+alot
 already
 also
 although
@@ -186,6 +188,7 @@ i'll
 i'm
 important
 in
+instead
 interested
 interesting
 into
@@ -226,12 +229,14 @@ longer
 longest
 looked
 looks
+lot
 m
 made
 make
 making
 many
 may
+maybe
 me
 might
 mightn't
@@ -411,6 +416,7 @@ together
 too
 took
 toward
+try
 turn
 turned
 turning
