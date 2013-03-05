@@ -13,7 +13,6 @@ all
 almost
 alone
 along
-alot
 already
 also
 although
@@ -416,7 +415,6 @@ together
 too
 took
 toward
-try
 turn
 turned
 turning
