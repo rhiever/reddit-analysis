@@ -251,6 +251,10 @@ def processSubreddit(subreddit, period, limit, count_word_freqs, max_threshold):
 
 def tokenize(text):
     """Return individual tokens from a block of text."""
+    def replace_nonascii(char):
+        return char if ord(char) < 128 else " "
+
+    text = "".join(replace_nonascii(x) for x in text)
     for token in text.split():  # first split on whitespace
         if URL_RE.search(token):  # Ignore invalid tokens
             continue

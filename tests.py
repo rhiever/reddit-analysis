@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function, unicode_literals
+
 import sys
 import unittest
 import redditanalysis as wf
 import praw
 from collections import defaultdict
+
 
 class TestSequenceFunctions(unittest.TestCase):
 
@@ -109,6 +113,11 @@ class TestSequenceFunctions(unittest.TestCase):
         # Test subtokens
         self.assertEqual(['hello', 'world'], tk('hello/world'))
         self.assertEqual(['hello', 'world'], tk(r'hello\world'))
+
+        # Test unicode removal
+        self.assertEqual(['a', 'hell', 'b'], tk('a ¡helló! b'))
+        self.assertEqual(['a', 'b'], tk('a 잠 b'))
+        self.assertEqual(['a', 'background', 'b'], tk('a〘background〙b'))
 
     def test_with_status(self):
         """
