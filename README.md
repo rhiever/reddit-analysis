@@ -58,9 +58,6 @@ constantly changing.
 from a dictionary. It is only recommended to use this file (with the `-x` option)
 if you want `word_freqs` to pick out very uncommon words.
 
-`data_dumps/*.csv` are all of the word dumps we've added to the repo. Usually
-we only add the data dumps by request.
-
 
 ## Usage
 
