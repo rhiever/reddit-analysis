@@ -38,20 +38,20 @@ commonWords = set()
 punctuation = " " + string.punctuation + "\n"
 
 
-
 # load a list of common words to ignore
 for line in open(os.path.join(PACKAGE_DIR, "words", "common-words.txt"), "r"):
     commonWords.add(line.strip(punctuation).lower())
 
 # Tokens that match this regular expression are immediately discared
 # This should be used pretty much to just discard links
-URL_RE = re.compile('|'.join([
-            '^(http(s)?://|www\.)',  # begins with
-            '\.(com|it|net|org)($|/)'  # ends with tld or is followed by /
-            ]))
+URL_RE = re.compile(
+    '|'.join(['^(http(s)?://|www\.)',  # begins with
+              '\.(com|it|net|org)($|/)'  # ends with tld or is followed by /
+              ]))
 
 # A regular expression to split tokens into smaller tokens.
 SPLIT_RE = re.compile('|'.join(["/", r"\\"]))
+
 
 def parse_cmd_line():
     """Command-line argument parsing."""
@@ -131,7 +131,7 @@ def parse_cmd_line():
         for line in open(os.path.join(PACKAGE_DIR, "words", "dict-words.txt"),
                          "r"):
             commonWords.add(line.strip(punctuation).lower())
-    
+
     return user, target, options
 
 
@@ -172,34 +172,42 @@ def parseText(text, count_word_freqs, max_threshold, is_markdown=True):
 
 def processRedditor(redditor, limit, count_word_freqs, max_threshold):
     """Parse submissions and comments for the given Redditor.
-        
-    :param limit: the maximum number of submissions to scrape from the subreddit
-        
+
+    :param limit: the maximum number of submissions to scrape from the
+        subreddit
+
     :param count_word_freqs: if False, only count a word once per text block
-        (title, selftext, comment body) rather than incrementing the total for for each instance.
-    
+        (title, selftext, comment body) rather than incrementing the total for
+        for each instance.
+
     :param max_threshold: maximum relative frequency in the text a word can
-        appear to be considered in word counts. prevents word spamming in a single submission.
-        
+        appear to be considered in word counts. prevents word spamming in a
+        single submission.
+
     """
     for entry in with_status(iterable=redditor.get_overview(limit=limit)):
         if isinstance(entry, praw.objects.Comment):  # Parse comment
             parseText(text=entry.body, count_word_freqs=count_word_freqs,
                       max_threshold=max_threshold)
         else:  # Parse submission
-            processSubmission(submission=entry, count_word_freqs=count_word_freqs,
-                              max_threshold=max_threshold, include_comments=False)
+            processSubmission(submission=entry,
+                              count_word_freqs=count_word_freqs,
+                              max_threshold=max_threshold,
+                              include_comments=False)
 
 
-def processSubmission(submission, count_word_freqs, max_threshold, include_comments=True):
+def processSubmission(submission, count_word_freqs, max_threshold,
+                      include_comments=True):
     """Parse a submission's text and body (if applicable).
 
-    :param count_word_freqs: if False, only count a word once per text block (title,
-        selftext, comment body) rather than incrementing the total for for each instance.
-    
+    :param count_word_freqs: if False, only count a word once per text block
+        (title, selftext, comment body) rather than incrementing the total for
+        for each instance.
+
     :param max_threshold: maximum relative frequency in the text a word can
-        appear to be considered in word counts. prevents word spamming in a single submission.
-    
+        appear to be considered in word counts. prevents word spamming in a
+        single submission.
+
     :param include_comments: include the submission's comments when True
 
     """
@@ -219,31 +227,39 @@ def processSubmission(submission, count_word_freqs, max_threshold, include_comme
                   max_threshold=max_threshold)
 
 
-def processSubreddit(subreddit, period, limit, count_word_freqs, max_threshold):
+def processSubreddit(subreddit, period, limit, count_word_freqs,
+                     max_threshold):
     """Parse comments, title text, and selftext in a given subreddit.
-    
-    :param period: the time period to scrape the subreddit over (day, week, month, etc.)
-    
-    :param limit: the maximum number of submissions to scrape from the subreddit
-    
+
+    :param period: the time period to scrape the subreddit over (day, week,
+    month, etc.)
+
+    :param limit: the maximum number of submissions to scrape from the
+    subreddit
+
     :param count_word_freqs: if False, only count a word once per text block
-        (title, selftext, comment body) rather than incrementing the total for for each instance.
-    
+        (title, selftext, comment body) rather than incrementing the total for
+        for each instance.
+
     :param max_threshold: maximum relative frequency in the text a word can
-        appear to be considered in word counts. prevents word spamming in a single submission.
-    
+        appear to be considered in word counts. prevents word spamming in a
+        single submission.
+
     """
 
     # determine period to count the words over
     params = {'t': period}
-    for submission in with_status(iterable=subreddit.get_top(limit=limit, params=params)):
+    for submission in with_status(iterable=subreddit.get_top(limit=limit,
+                                                             params=params)):
         try:
-            processSubmission(submission=submission, count_word_freqs=count_word_freqs,
+            processSubmission(submission=submission,
+                              count_word_freqs=count_word_freqs,
                               max_threshold=max_threshold)
         except HTTPError as exc:
             sys.stderr.write("\nSkipping submission {0} due to HTTP status {1}"
                              " error. Continuing...\n"
-                             .format(submission.permalink, exc.response.status_code))
+                             .format(submission.permalink,
+                                     exc.response.status_code))
         except ValueError:  # Occurs occasionally with empty responses
             sys.stderr.write("\nSkipping submission {0} due to ValueError.\n"
                              .format(submission.permalink))
@@ -275,8 +291,9 @@ def with_status(iterable):
         if i % 100 == 99:
             sys.stderr.write('\n')
         yield item
-    
+
     sys.stderr.write('\n')
+
 
 def main():
     # parse the command-line options and arguments
@@ -297,8 +314,9 @@ def main():
     target = target[3:]
 
     if options.is_subreddit:
-        processSubreddit(subreddit=r.get_subreddit(target), period=options.period,
-                         limit=options.limit, count_word_freqs=options.count_word_freqs,
+        processSubreddit(subreddit=r.get_subreddit(target),
+                         period=options.period, limit=options.limit,
+                         count_word_freqs=options.count_word_freqs,
                          max_threshold=options.max_threshold)
     else:
         processRedditor(redditor=r.get_redditor(target), limit=options.limit,
@@ -315,7 +333,7 @@ def main():
         outFileName = "subreddit-" + outFileName
     else:
         outFileName = "user-" + outFileName
-        
+
     outFile = open(outFileName, "w")
 
     # combine similar words into single count
