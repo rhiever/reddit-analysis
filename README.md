@@ -1,6 +1,6 @@
 # Reddit Analysis project
 
-Please send all requests to make a Most-Used Words (MUW) word cloud to http://www.reddit.com/r/MUWs/
+Please send all requests to make a Most-Used Words (MUW) cloud to http://www.reddit.com/r/MUWs/
 
 Feel free to post the MUWs you've made there, too.
 
@@ -69,7 +69,7 @@ message:
 This command will detail all of the command line options and arguments for the
 `word_freqs`.
 
-### Make a word cloud for a subreddit or redditor
+### Make a MUW cloud for a subreddit or redditor
 
 To count the most-used words for a subreddit over the last month, enter the
 following command:
@@ -81,7 +81,7 @@ Similarly, for a reddit user:
     word_freqs YOUR-USERNAME /u/REDDITOR
 
 where `YOUR-USERNAME` is your reddit username and `SUBREDDIT` / `REDDITOR` is
-the subreddit / redditor you want to make the word cloud for. You
+the subreddit / redditor you want to make the MUW cloud for. You
 must provide *both* arguments for the script to work properly.
 
 Once the script completes, it will create a file called `SUBREDDIT.csv` (or
@@ -89,5 +89,5 @@ Once the script completes, it will create a file called `SUBREDDIT.csv` (or
 the commonly-used words from the subreddit / redditor you specified in the
 frequencies they were used.
 
-To make a word cloud out of the words, copy all of the words into
+To make a MUW cloud out of the words, copy all of the words into
 http://www.wordle.net/compose and click the Go button. Ta-da, you're done!
