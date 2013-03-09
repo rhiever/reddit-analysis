@@ -12,3 +12,5 @@ dist/
 *.sh
 
 submit.py
+
+*.png
