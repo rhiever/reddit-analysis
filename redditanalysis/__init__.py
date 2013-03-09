@@ -336,9 +336,9 @@ def main():
 
     outFile = open(outFileName, "w")
 
-    # combine similar words into single count
-    # e.g.: combine "picture" and "pictures" into single count
+    # combine singular and plural forms of words into single count
     for word, count in popularWords.items():
+        # e.g.: "picture" and "pictures"
         if word.endswith("s"):
             # if the singular form of the word was used
             singular = word[:-1]
@@ -351,6 +351,20 @@ def main():
                 else:
                     popularWords[word] += popularWords[singular]
                     del popularWords[singular]
+
+        # e.g.: "furry" and "furries"
+        if word.endswith("ies"):
+            # if the singular form of the word was used
+            singular = word[:-3] + "y"
+            if popularWords[singular] > 0:
+                # combine the count into the most-used form of the word
+                if popularWords[singular] > count:
+                    popularWords[singular] += popularWords[word]
+                    del popularWords[word]
+                else:
+                    popularWords[word] += popularWords[singular]
+                    del popularWords[singular]
+            
 
     for word in sorted(popularWords.keys()):
 
