@@ -14,7 +14,7 @@ class TestSequenceFunctions(unittest.TestCase):
         wf.popularWords = defaultdict(int)
 
     def test_parse_cmd_line(self):
-        self.user, self.target, options, args = wf.parse_cmd_line()
+        self.user, self.target, options = wf.parse_cmd_line()
         self.assertEqual(self.user, sys.argv[1])
         self.assertEqual(self.target, sys.argv[2])
 

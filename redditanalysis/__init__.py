@@ -258,11 +258,11 @@ def processSubreddit(subreddit, period, limit, count_word_freqs,
         except HTTPError as exc:
             sys.stderr.write("\nSkipping submission {0} due to HTTP status {1}"
                              " error. Continuing...\n"
-                             .format(submission.permalink,
+                             .format(submission.permalink.encode("UTF-8"),
                                      exc.response.status_code))
         except ValueError:  # Occurs occasionally with empty responses
             sys.stderr.write("\nSkipping submission {0} due to ValueError.\n"
-                             .format(submission.permalink))
+                             .format(submission.permalink.encode("UTF-8")))
 
 
 def tokenize(text):
