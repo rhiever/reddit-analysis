@@ -27,10 +27,11 @@ from optparse import OptionParser
 from requests.exceptions import HTTPError
 from update_checker import update_check
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 PACKAGE_DIR = os.path.dirname(__file__)
 
+allWords = defaultdict(int)
 popularWords = defaultdict(int)
 commonWords = set()
 
@@ -105,6 +106,12 @@ def parse_cmd_line():
                             " word cloud"
                             " [default: false]"))
 
+    parser.add_option("-r", "--no-raw-data",
+                      action="store_true",
+                      default=False,
+                      help=("disable raw word count output file"
+                            " [default: false]"))
+
     parser.add_option("-v", "--verbose",
                       action="store_true",
                       default=False,
@@ -158,10 +165,12 @@ def parseText(text, count_word_freqs, max_threshold, is_markdown=True):
     text_words = defaultdict(int)
     for token in tokenize(text):
         total += 1
+        # add to the raw word list
+        allWords[token] += 1
         if token not in commonWords:
             text_words[token] += 1
 
-    # Add to popularWords list
+    # Count the popular words
     for word, count in text_words.items():
         if count / total <= max_threshold:
             if count_word_freqs:
@@ -367,7 +376,7 @@ def main():
             
 
     for word in sorted(popularWords.keys()):
-
+        
         # tweak this number depending on the subreddit
         # some subreddits end up having TONS of words and it seems to overflow
         # the Python string buffer
@@ -392,6 +401,17 @@ def main():
     # place this text into wordle.net
     if options.verbose:
         print(output)
+
+    # save the raw word counts to a file
+    if not options.no_raw_data:
+        outFile = open("raw-" + outFileName, "w")
+        
+        for word in sorted(allWords.keys()):
+            txt = word + ":" + str(popularWords[word]) + "\n"
+            txt = txt.encode("UTF-8")
+            outFile.write(txt)
+            
+        outFile.close()
 
 
 if __name__ == '__main__':
