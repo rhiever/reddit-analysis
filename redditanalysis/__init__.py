@@ -35,13 +35,11 @@ allWords = defaultdict(int)
 popularWords = defaultdict(int)
 commonWords = set()
 
-# punctuation to strip from words
-punctuation = " " + string.punctuation + "\n"
 
 
 # load a list of common words to ignore
 for line in open(os.path.join(PACKAGE_DIR, "words", "common-words.txt"), "r"):
-    commonWords.add(line.strip(punctuation).lower())
+    commonWords.add(line.strip().lower())
 
 # Tokens that match this regular expression are immediately discared
 # This should be used pretty much to just discard links
@@ -50,8 +48,8 @@ URL_RE = re.compile(
               '\.(com|it|net|org)($|/)'  # ends with tld or is followed by /
               ]))
 
-# A regular expression to split tokens into smaller tokens.
-SPLIT_RE = re.compile('|'.join(["/", r"\\"]))
+# A valid token regular expression
+TOKEN_RE = re.compile(r'[\w]+(?:\'(?:d|ll|m|re|s|t|ve))?', flags=re.UNICODE)
 
 
 def parse_cmd_line():
@@ -137,7 +135,7 @@ def parse_cmd_line():
     if options.include_dictionary:
         for line in open(os.path.join(PACKAGE_DIR, "words", "dict-words.txt"),
                          "r"):
-            commonWords.add(line.strip(punctuation).lower())
+            commonWords.add(line.strip().lower())
 
     return user, target, options
 
@@ -276,17 +274,16 @@ def processSubreddit(subreddit, period, limit, count_word_freqs,
 
 def tokenize(text):
     """Return individual tokens from a block of text."""
-    def replace_nonascii(char):
-        return char if ord(char) < 128 else " "
+    def normalized_tokens(token):
+        """Yield lower-case tokens from the given token."""
+        for sub in TOKEN_RE.findall(token):
+            if sub:
+                yield sub.lower()
 
-    text = "".join(replace_nonascii(x) for x in text)
     for token in text.split():  # first split on whitespace
         if URL_RE.search(token):  # Ignore invalid tokens
             continue
-        for sub_token in SPLIT_RE.split(token):
-            sub_token = sub_token.strip(punctuation).lower()
-            if not sub_token:
-                continue
+        for sub_token in normalized_tokens(token):
             if sub_token.endswith("'s"):  # Fix possessive form
                 sub_token = sub_token[:-2]
             yield sub_token

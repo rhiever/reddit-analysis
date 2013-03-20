@@ -114,13 +114,18 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertEqual(['hello', 'world'], tk('!hello world'))
         self.assertEqual(['hello', 'world'], tk('hello world!'))
 
+        # Verify contractions
+        self.assertEqual(["i'd", "i'll", "i'm"], tk("I'd I'll I'm"))
+        self.assertEqual(["you're", "can't", "i've"], tk("you're can't I've"))
+
         # Test subtokens
         self.assertEqual(['hello', 'world'], tk('hello/world'))
         self.assertEqual(['hello', 'world'], tk(r'hello\world'))
 
         # Test unicode removal
-        self.assertEqual(['a', 'hell', 'b'], tk('a ¡helló! b'))
-        self.assertEqual(['a', 'b'], tk('a 잠 b'))
+        self.assertEqual(['a', 'helló', 'b'], tk('a ¡helló! b'))
+        self.assertEqual(['a', '잠', 'b'], tk('a 잠 b'))
+        self.assertEqual(['a', 'b'], tk('a≥b'))
         self.assertEqual(['a', 'background', 'b'], tk('a〘background〙b'))
 
     def test_with_status(self):

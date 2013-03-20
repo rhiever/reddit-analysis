@@ -100,7 +100,7 @@ during
 e
 each
 early
-e.g.
+e.g
 either
 else
 end
@@ -181,7 +181,7 @@ how'll
 how's
 i
 i'd
-i.e.
+i.e
 if
 i'll
 i'm
