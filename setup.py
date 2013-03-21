@@ -18,8 +18,8 @@ setup(name=PACKAGE_NAME,
                    'Programming Language :: Python'],
       description=('A tool to aid in the production of word clouds for '
                    'subreddits and users on reddit.'),
-      entry_points={'console_scripts':
-                        ['word_freqs={0}:main'.format(PACKAGE_NAME),]},
+      entry_points={'console_scripts': ['word_freqs={0}:main'
+                                        .format(PACKAGE_NAME), ]},
       install_requires=['beautifulsoup', 'markdown', 'praw>=2.0.11',
                         'update_checker>=0.5'],
       license='GPLv3',

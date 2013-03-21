@@ -18,7 +18,6 @@
 import os
 import praw
 import re
-import string
 import sys
 from BeautifulSoup import BeautifulSoup
 from collections import defaultdict
@@ -34,7 +33,6 @@ PACKAGE_DIR = os.path.dirname(__file__)
 allWords = defaultdict(int)
 popularWords = defaultdict(int)
 commonWords = set()
-
 
 
 # load a list of common words to ignore
@@ -370,10 +368,8 @@ def main():
                 else:
                     popularWords[word] += popularWords[singular]
                     del popularWords[singular]
-            
 
     for word in sorted(popularWords, key=popularWords.get, reverse=True):
-        
         # tweak this number depending on the subreddit
         # some subreddits end up having TONS of words and it seems to overflow
         # the Python string buffer
@@ -402,12 +398,10 @@ def main():
     # save the raw word counts to a file
     if not options.no_raw_data:
         outFile = open("raw-" + outFileName, "w")
-        
         for word in sorted(allWords, key=allWords.get, reverse=True):
             txt = word + ":" + str(allWords[word]) + "\n"
             txt = txt.encode("UTF-8")
             outFile.write(txt)
-            
         outFile.close()
 
 
