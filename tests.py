@@ -126,6 +126,7 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertEqual(['a', 'helló', 'b'], tk('a ¡helló! b'))
         self.assertEqual(['a', '잠', 'b'], tk('a 잠 b'))
         self.assertEqual(['a', 'b'], tk('a≥b'))
+        self.assertEqual(['montréal', 'français'], tk('Montréal français'))
         self.assertEqual(['a', 'background', 'b'], tk('a〘background〙b'))
 
     def test_with_status(self):
