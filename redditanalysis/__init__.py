@@ -33,11 +33,17 @@ PACKAGE_DIR = os.path.dirname(__file__)
 allWords = defaultdict(int)
 popularWords = defaultdict(int)
 commonWords = set()
-
+commonWordFreqs = defaultdict(float)
 
 # load a list of common words to ignore
-for line in open(os.path.join(PACKAGE_DIR, "words", "common-words.txt"), "r"):
-    commonWords.add(line.strip().lower())
+#for line in open(os.path.join(PACKAGE_DIR, "words", "common-words.txt"), "r"):
+#    commonWords.add(line.strip().lower())
+
+# load a list of common word frequencies
+for line in open(os.path.join(PACKAGE_DIR, "words", "common-word-freqs.txt"), "r"):
+    sline = line.split("\t")
+    commonWordFreqs[sline[0]] = float(sline[1])
+
 
 # Tokens that match this regular expression are immediately discared
 # This should be used pretty much to just discard links
@@ -369,11 +375,19 @@ def main():
                     popularWords[word] += popularWords[singular]
                     del popularWords[singular]
 
+
+    # normalize word frequencies by their regular word usage frequency in all literature
+    for word in popularWords:
+        try:
+            popularWords[word] = float(popularWords[word]) / commonWordFreqs[word]
+        except:
+            pass
+
     for word in sorted(popularWords, key=popularWords.get, reverse=True):
         # tweak this number depending on the subreddit
         # some subreddits end up having TONS of words and it seems to overflow
         # the Python string buffer
-        if popularWords[word] > 5:
+        if popularWords[word] > 0:
             pri = True
 
             # don't print the word if it's just a number
@@ -398,6 +412,7 @@ def main():
     # save the raw word counts to a file
     if not options.no_raw_data:
         outFile = open("raw-" + outFileName, "w")
+
         for word in sorted(allWords, key=allWords.get, reverse=True):
             txt = word + ":" + str(allWords[word]) + "\n"
             txt = txt.encode("UTF-8")
