@@ -84,7 +84,7 @@ where `YOUR-USERNAME` is your reddit username and `SUBREDDIT` / `REDDITOR` is
 the subreddit / redditor you want to make the MUW cloud for. You
 must provide *both* arguments for the script to work properly.
 
-Once the script completes, it will create a file called `SUBREDDIT.csv` (or
+Once the script completes, it will create a file called `subreddit-SUBREDDIT.csv` (or
 `user-REDDITOR.csv`) to the directory you ran it in. This file contains all of
 the commonly-used words from the subreddit / redditor you specified in the
 frequencies they were used.
