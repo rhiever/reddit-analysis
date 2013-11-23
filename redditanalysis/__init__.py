@@ -94,6 +94,12 @@ def parse_cmd_line():
                             " selftext, comment body) rather than incrementing"
                             " the total for each instance"
                             " [default: false]"))
+                            
+    parser.add_option("-u", "--multiprocess",
+                      action="store_true",
+                      default=False,
+                      help=("enable PRAW multiprocess support"
+                            " [default: false]"))
 
     parser.add_option("-i", "--include-dictionary",
                       action="store_true",
@@ -307,8 +313,15 @@ def main():
     update_check(__name__, __version__)
 
     # open connection to Reddit
-    r = praw.Reddit(user_agent="bot by /u/{0}".format(user),
-                    disable_update_check=True)
+    if options.multiprocess:
+    	from praw.handlers import MultiprocessHandler
+    	handler = MultiprocessHandler()
+    	r = praw.Reddit(user_agent="bot by /u/{0}".format(user),
+                    handler=handler)
+                    
+    else:	
+    	r = praw.Reddit(user_agent="bot by /u/{0}".format(user))
+                  	  
     r.config.decode_html_entities = True
 
     # run analysis
