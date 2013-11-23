@@ -313,15 +313,15 @@ def main():
     update_check(__name__, __version__)
 
     # open connection to Reddit
+    handler = None
+
     if options.multiprocess:
     	from praw.handlers import MultiprocessHandler
     	handler = MultiprocessHandler()
-    	r = praw.Reddit(user_agent="bot by /u/{0}".format(user),
+    
+    r = praw.Reddit(user_agent="bot by /u/{0}".format(user),
                     handler=handler)
                     
-    else:	
-    	r = praw.Reddit(user_agent="bot by /u/{0}".format(user))
-                  	  
     r.config.decode_html_entities = True
 
     # run analysis
