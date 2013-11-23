@@ -26,7 +26,7 @@ from optparse import OptionParser
 from requests.exceptions import HTTPError
 from update_checker import update_check
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 PACKAGE_DIR = os.path.dirname(__file__)
 
@@ -93,6 +93,12 @@ def parse_cmd_line():
                       help=("only count a word once per text block (title,"
                             " selftext, comment body) rather than incrementing"
                             " the total for each instance"
+                            " [default: false]"))
+                            
+    parser.add_option("-u", "--multiprocess",
+                      action="store_true",
+                      default=False,
+                      help=("enable PRAW multiprocess support"
                             " [default: false]"))
 
     parser.add_option("-i", "--include-dictionary",
@@ -307,8 +313,15 @@ def main():
     update_check(__name__, __version__)
 
     # open connection to Reddit
+    handler = None
+
+    if options.multiprocess:
+    	from praw.handlers import MultiprocessHandler
+    	handler = MultiprocessHandler()
+    
     r = praw.Reddit(user_agent="bot by /u/{0}".format(user),
-                    disable_update_check=True)
+                    handler=handler)
+                    
     r.config.decode_html_entities = True
 
     # run analysis
