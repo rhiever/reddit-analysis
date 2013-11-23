@@ -64,16 +64,16 @@ def parse_cmd_line():
                       type="string",
                       dest="period",
                       default="month",
-                      help=("period to count words over: "
-                            "day/week/month/year/all"
+                      help=("period to count words over:"
+                            " day/week/month/year/all"
                             " [default: month]"))
 
     parser.add_option("-l", "--limit",
                       action="store",
                       type="int",
                       dest="limit",
-                      help=("maximum number of submissions/comments to count "
-                            "word frequencies for"
+                      help=("maximum number of submissions/comments to count"
+                            " word frequencies for"
                             " [default: no limit]"))
 
     parser.add_option("-m", "--maxthresh",
@@ -90,9 +90,9 @@ def parse_cmd_line():
                       action="store_false",
                       dest="count_word_freqs",
                       default=True,
-                      help=("only count a word once per text block (title, "
-                            "selftext, comment body) rather than incrementing"
-                            "the total for for each instance"
+                      help=("only count a word once per text block (title,"
+                            " selftext, comment body) rather than incrementing"
+                            " the total for each instance"
                             " [default: false]"))
 
     parser.add_option("-i", "--include-dictionary",
