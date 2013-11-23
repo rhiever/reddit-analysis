@@ -91,3 +91,12 @@ frequencies they were used.
 
 To make a MUW cloud out of the words, copy all of the words into
 http://www.wordle.net/compose and click the Go button. Ta-da, you're done!
+
+### Multiprocess
+
+`reddit-analysis` supports multiprocess PRAW. This allows you to run multiple instances
+of `reddit-analysis` simultaneously and not risk getting banned for overusing the reddit API.
+To enable multiprocess PRAW in `reddit-analysis`, add the `-u` flag.
+
+See the <a href="https://praw.readthedocs.org/en/latest/pages/multiprocess.html" target="_blank">PRAW
+documentation<a/> for more information.
