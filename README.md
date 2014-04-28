@@ -84,7 +84,7 @@ where `YOUR-USERNAME` is your reddit username and `SUBREDDIT` / `REDDITOR` is
 the subreddit / redditor you want to make the MUW cloud for. You
 must provide *both* arguments for the script to work properly.
 
-**Why is your username required? Simply because it will be used as the user-agent when making the Reddit API request. Reddit asks its API users to use something unique as the user-agent and recomends to use the users username.**
+**Why is your username required?** Simply because it will be used as the user-agent when making the Reddit API request. Reddit asks its API users to use something unique as the user-agent and recomends to use the users username.
 
 Once the script completes, it will create a file called `subreddit-SUBREDDIT.csv` (or
 `user-REDDITOR.csv`) to the directory you ran it in. This file contains all of
