@@ -23,8 +23,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 ## Dependencies
 
 You must first install the Python library if you do not have that already.
-Preferably, use the <a href="http://www.enthought.com/products/epd_free.php"
-target="_blank">Enthought Python Distribution</a> (EPD) for an easy install.
+Preferably, use the [Anaconda Python distribution](http://continuum.io/downloads) for an easy install.
 
 Next, you can install this package. Enter the following command into the
 terminal:
@@ -100,5 +99,4 @@ http://www.wordle.net/compose and click the Go button. Ta-da, you're done!
 of `reddit-analysis` simultaneously and not risk getting banned for overusing the reddit API.
 To enable multiprocess PRAW in `reddit-analysis`, add the `-u` flag.
 
-See the <a href="https://praw.readthedocs.org/en/latest/pages/multiprocess.html" target="_blank">PRAW
-documentation<a/> for more information.
+See the [PRAW documentation](https://praw.readthedocs.org/en/latest/pages/multiprocess.html) for more information.

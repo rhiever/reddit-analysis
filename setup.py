@@ -1,25 +1,21 @@
 import os
 import re
 from setuptools import setup
-from setuptools.command import easy_install
 
 PACKAGE_NAME = "redditanalysis"
 
 INIT = open(os.path.join(os.path.dirname(__file__), PACKAGE_NAME, "__init__.py")).read()
-VERSION = re.search("__version__ = '([^']+)'", INIT).group(1)
+VERSION = re.search("__version__ = \"([^\"]+)\"", INIT).group(1)
 
 def get_long_description():
-    readme_file = 'README.md'
+    readme_file = "README.md"
     if not os.path.isfile(readme_file):
-        return ''
+        return ""
     # Try to transform the README from Markdown to reStructuredText.
     try:
-        easy_install.main(["-U", "pyandoc==0.0.1"])
-        import pandoc
-        pandoc.core.PANDOC_PATH = "pandoc"
-        doc = pandoc.Document()
-        doc.markdown = open(readme_file).read()
-        description = doc.rst
+        os.system("pandoc --from=markdown --to=rst --output=README.rst README.md")
+        description = open("README.rst").read()
+        os.remove("README.rst")
     except Exception:
         description = open(readme_file).read()
     return description
@@ -32,7 +28,6 @@ setup(name=PACKAGE_NAME,
                    "Intended Audience :: Science/Research",
                    "License :: OSI Approved :: BSD License",
                    "Operating System :: OS Independent",
-                   "Programming Language :: Python",
                    "Programming Language :: Python",
                    "Programming Language :: Python :: 2",
                    "Programming Language :: Python :: 2.6",
