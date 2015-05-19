@@ -32,8 +32,8 @@ __version__ = "1.0.1"
 
 PACKAGE_DIR = os.path.dirname(__file__)
 
-ALL_WORDS = defaultdict(int)
-POPULAR_WORDS = defaultdict(int)
+all_words = defaultdict(int)
+popular_words = defaultdict(int)
 COMMON_WORDS = set()
 
 # load a list of common words to ignore
@@ -187,7 +187,7 @@ def parse_text(text, count_word_freqs, max_threshold, is_markdown=True):
     for token in tokenize(text):
         total += 1
         # add to the raw word list
-        ALL_WORDS[token] += 1
+        all_words[token] += 1
         if token not in COMMON_WORDS:
             text_words[token] += 1
 
@@ -195,9 +195,9 @@ def parse_text(text, count_word_freqs, max_threshold, is_markdown=True):
     for word, count in text_words.items():
         if count / total <= max_threshold:
             if count_word_freqs:
-                POPULAR_WORDS[word] += count
+                popular_words[word] += count
             else:
-                POPULAR_WORDS[word] += 1
+                popular_words[word] += 1
 
 
 def with_status(iterable):
@@ -353,41 +353,41 @@ def main():
     out_file = open(out_file_name, "w")
 
     # combine singular and plural forms of words into single count
-    for word in list(POPULAR_WORDS.keys()):
-        count = POPULAR_WORDS[word]
+    for word in list(popular_words.keys()):
+        count = popular_words[word]
 
         # e.g.: "picture" and "pictures"
         if word.endswith("s"):
             # if the singular form of the word was used
             singular = word[:-1]
-            if POPULAR_WORDS[singular] > 0:
+            if popular_words[singular] > 0:
 
                 # combine the count into the most-used form of the word
-                if POPULAR_WORDS[singular] > count:
-                    POPULAR_WORDS[singular] += POPULAR_WORDS[word]
-                    del POPULAR_WORDS[word]
+                if popular_words[singular] > count:
+                    popular_words[singular] += popular_words[word]
+                    del popular_words[word]
                 else:
-                    POPULAR_WORDS[word] += POPULAR_WORDS[singular]
-                    del POPULAR_WORDS[singular]
+                    popular_words[word] += popular_words[singular]
+                    del popular_words[singular]
 
         # e.g.: "furry" and "furries"
         if word.endswith("ies"):
             # if the singular form of the word was used
             singular = "{0}y".format(word[:-3])
-            if POPULAR_WORDS[singular] > 0:
+            if popular_words[singular] > 0:
                 # combine the count into the most-used form of the word
-                if POPULAR_WORDS[singular] > count:
-                    POPULAR_WORDS[singular] += POPULAR_WORDS[word]
-                    del POPULAR_WORDS[word]
+                if popular_words[singular] > count:
+                    popular_words[singular] += popular_words[word]
+                    del popular_words[word]
                 else:
-                    POPULAR_WORDS[word] += POPULAR_WORDS[singular]
-                    del POPULAR_WORDS[singular]
+                    popular_words[word] += popular_words[singular]
+                    del popular_words[singular]
 
-    for word in sorted(POPULAR_WORDS, key=POPULAR_WORDS.get, reverse=True):
+    for word in sorted(popular_words, key=popular_words.get, reverse=True):
         # tweak this number depending on the subreddit
         # some subreddits end up having TONS of words and it seems to overflow
         # the Python string buffer
-        if POPULAR_WORDS[word] > 5:
+        if popular_words[word] > 5:
             pri = True
 
             # don't print the word if it's just a number
@@ -397,7 +397,7 @@ def main():
             # add as many copies of the word as it was mentioned in the
             # subreddit
             if pri:
-                out_text = str("{0}:{1}\n".format(word, POPULAR_WORDS[word]))
+                out_text = str("{0}:{1}\n".format(word, popular_words[word]))
                 output += out_text
                 out_file.write(out_text)
 
@@ -411,8 +411,8 @@ def main():
     # save the raw word counts to a file
     if not options.no_raw_data:
         out_file = open("raw-{0}".format(out_file_name), "w")
-        for word in sorted(ALL_WORDS, key=ALL_WORDS.get, reverse=True):
-            out_text = str("{0}:{1}\n".format(word, ALL_WORDS[word]))
+        for word in sorted(all_words, key=all_words.get, reverse=True):
+            out_text = str("{0}:{1}\n".format(word, all_words[word]))
             out_file.write(out_text)
         out_file.close()
 
