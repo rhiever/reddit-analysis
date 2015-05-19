@@ -6,7 +6,7 @@ Feel free to post the MUWs you've made there, too.
 
 ## License
 
-Copyright 2013 Randal S. Olson.
+Copyright 2015 Randal S. Olson.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -29,7 +29,7 @@ target="_blank">Enthought Python Distribution</a> (EPD) for an easy install.
 Next, you can install this package. Enter the following command into the
 terminal:
 
-    easy_install redditanalysis
+    pip install redditanalysis
 
 You may need to put `sudo` in front of the above command if your system
 requires root access.
