@@ -1,3 +1,8 @@
+[![PyPI version](https://badge.fury.io/py/redditanalysis.svg)](https://badge.fury.io/py/redditanalysis)
+![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)
+![Python 3.5](https://img.shields.io/badge/python-3.5-blue.svg)
+![License](https://img.shields.io/badge/license-GPLv3-blue.svg)
+
 # Reddit Analysis project
 
 Please send all requests to make a Most-Used Words (MUW) cloud to http://www.reddit.com/r/MUWs/
@@ -6,7 +11,7 @@ Feel free to post the MUWs you've made there, too.
 
 ## License
 
-Copyright 2015 Randal S. Olson.
+Copyright 2016 Randal S. Olson.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
