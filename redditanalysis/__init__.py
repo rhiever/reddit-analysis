@@ -179,7 +179,7 @@ def parse_text(text, count_word_freqs, max_threshold, is_markdown=True):
     """
 
     if is_markdown:
-        soup = BeautifulSoup(markdown(text))
+        soup = BeautifulSoup(markdown(text), "lxml")
         text = "".join(soup.findAll(text=True))
 
     total = 0.0  # intentionally a float
