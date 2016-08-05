@@ -39,7 +39,7 @@ setup(name=PACKAGE_NAME,
       description=("A tool to aid in the production of word clouds for "
                    "subreddits and users on reddit."),
       entry_points={"console_scripts": ["word_freqs={0}:main".format(PACKAGE_NAME), ]},
-      install_requires=["beautifulsoup4", "markdown", "praw>=2.1", "update_checker>=0.1"],
+      install_requires=["beautifulsoup4", "markdown", "praw<4", "update_checker>=0.1"],
       license="GPLv3",
       long_description=get_long_description(),
       packages=[PACKAGE_NAME],
