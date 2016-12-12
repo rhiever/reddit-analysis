@@ -397,7 +397,7 @@ def main():
             # add as many copies of the word as it was mentioned in the
             # subreddit
             if pri:
-                out_text = str("{0}:{1}\n".format(word, popular_words[word]))
+                out_text = str("{0}:{1}\n".format(word.encode('utf-8'), popular_words[word]))
                 output += out_text
                 out_file.write(out_text)
 
@@ -412,7 +412,7 @@ def main():
     if not options.no_raw_data:
         out_file = open("raw-{0}".format(out_file_name), "w")
         for word in sorted(all_words, key=all_words.get, reverse=True):
-            out_text = str("{0}:{1}\n".format(word, all_words[word]))
+            out_text = str("{0}:{1}\n".format(word.encode('utf-8'), all_words[word]))
             out_file.write(out_text)
         out_file.close()
 
