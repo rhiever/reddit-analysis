@@ -76,7 +76,8 @@ def parse_cmd_line():
                       type="string",
                       dest="search_string",
                       default="*",
-                      help="search string to match in submission title")
+                      help="search query to match in submission title"
+                      " see https://www.reddit.com/wiki/search/ to find what queries are possible")
 
     parser.add_option("-l", "--limit",
                       action="store",
