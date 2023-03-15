@@ -108,11 +108,11 @@ must provide *both* arguments for the script to work properly.
 #### Example usages
 Produce word frequency for two subreddits `/r/sharktankindia` and `/r/sharktank`
 ```console
-foo@bar:~$ word_freqs vivekaffinity "/r/sharktankindia;/r/sharktank" 
+foo@bar:~$ word_freqs someusername "/r/sharktankindia;/r/sharktank" 
 ```
 Produce word frequency for two subreddits `/r/sharktankindia` and `/r/sharktank` for the submissions which happened in the last day as well as matching the string "Season 2"
 ```console
-foo@bar:~$ word_freqs vivekaffinity "/r/sharktankindia;/r/sharktank" -p day -s "Season 2"
+foo@bar:~$ word_freqs someusername "/r/sharktankindia;/r/sharktank" -p day -s "Season 2"
 ```
 
 **Why is your username required?** Simply because it will be used as the user-agent when making the Reddit API request. Reddit asks its API users to use something unique as the user-agent and recomends to use the users username.
