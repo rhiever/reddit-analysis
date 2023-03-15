@@ -28,7 +28,7 @@ from optparse import OptionParser
 from requests.exceptions import HTTPError
 from update_checker import update_check
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 PACKAGE_DIR = os.path.dirname(__file__)
 
@@ -57,8 +57,9 @@ def parse_cmd_line():
 
     usage = ("usage: %prog [options] USERNAME TARGET\n\n"
              "USERNAME sets your Reddit username for the bot\n"
-             "TARGET sets the subreddit or user to count word frequencies for."
-             "\nenter /r/TARGET for subreddits or /u/TARGET for users.")
+             "TARGET sets the subreddit(s) or user to count word frequencies for."
+             "\nenter /r/TARGET for subreddits or /u/TARGET for users."
+             "\nExample: word_freqs YOUR-USERNAME \"/r/subreddit-1;subreddit2;subreddit3\"")
     parser = OptionParser(usage=usage)
 
     parser.add_option("-p", "--period",
@@ -69,6 +70,13 @@ def parse_cmd_line():
                       help=("period to count words over:"
                             " day/week/month/year/all"
                             " [default: month]"))
+    
+    parser.add_option("-s", "--search_string",
+                      action="store",
+                      type="string",
+                      dest="search_string",
+                      default="*",
+                      help="search string to match in submission title")
 
     parser.add_option("-l", "--limit",
                       action="store",
@@ -115,7 +123,7 @@ def parse_cmd_line():
                       default=False,
                       help=("disable raw word count output file"
                             " [default: false]"))
-
+    
     parser.add_option("-v", "--verbose",
                       action="store_true",
                       default=False,
@@ -203,8 +211,7 @@ def parse_text(text, count_word_freqs, max_threshold, is_markdown=True):
 def with_status(iterable):
     """Wrap an iterable outputting '.' for each item (up to 100 per line)."""
     for i, item in enumerate(iterable):
-        sys.stderr.write(".")
-        sys.stderr.flush()
+        
         if i % 100 == 99:
             sys.stderr.write("\n")
         yield item
@@ -252,9 +259,15 @@ def process_submission(submission, count_word_freqs, max_threshold, include_comm
     :param include_comments: include the submission's comments when True
 
     """
+
+    sys.stdout.write("Processing Submission... with title \"{0}\"\n".format(submission.title))
+    sys.stdout.flush()
+
+
     if include_comments:  # parse all the comments for the submission
-        submission.replace_more_comments()
-        for comment in praw.helpers.flatten_tree(submission.comments):
+
+        submission.comments.replace_more(limit=None)
+        for comment in submission.comments.list():
             parse_text(text=comment.body, count_word_freqs=count_word_freqs,
                        max_threshold=max_threshold)
 
@@ -268,7 +281,7 @@ def process_submission(submission, count_word_freqs, max_threshold, include_comm
                    max_threshold=max_threshold)
 
 
-def process_subreddit(subreddit, period, limit, count_word_freqs, max_threshold):
+def process_subreddit(subreddit, period, limit, count_word_freqs, max_threshold, search_query):
     """Parse comments, title text, and selftext in a given subreddit.
 
     :param period: the time period to scrape the subreddit over (day, week,
@@ -287,9 +300,10 @@ def process_subreddit(subreddit, period, limit, count_word_freqs, max_threshold)
 
     """
 
-    # determine period to count the words over
-    params = {"t": period}
-    for submission in with_status(iterable=subreddit.get_top(limit=limit, params=params)):
+    
+    sys.stdout.write("Searching for Submissions matching \"" + search_query + "\"\n")
+
+    for submission in with_status(iterable=subreddit.search(search_query, time_filter=period)):
         try:
             process_submission(submission=submission,
                                count_word_freqs=count_word_freqs,
@@ -318,22 +332,49 @@ def main():
         from praw.handlers import MultiprocessHandler
         handler = MultiprocessHandler()
 
-    reddit = praw.Reddit(
-        user_agent="/u/{0} reddit analyzer".format(user), handler=handler)
+
+    # we expect two environment variable to be set, 
+    # praw_client_id and praw_client_secret - the values which can be obtained from 
+    # reddit app registration
+    # check for their presence and alert if not present
+    dependant_env_name = ["praw_client_id", "praw_client_secret"]
+
+    for var_name in dependant_env_name:
+        if not var_name in os.environ or os.environ[var_name] == "":
+            sys.stderr.write("\nThe environment variable {0} is not present or set.\n".format(var_name))
+            sys.stderr.write("\nProcure client ID and client secret from https://www.reddit.com/prefs/apps\
+and set the enironment variables praw_client_id and praw_client_secret\n")
+            sys.exit(1)
+
+    reddit = praw.Reddit(user_agent="/u/{0} reddit analyzer".format(user), handler=handler)
 
     reddit.config.decode_html_entities = True
 
     # run analysis
-    sys.stderr.write("Analyzing {0}\n".format(target))
-    sys.stderr.flush()
+    sys.stdout.write("List of subreddits to analyse: {0}\n".format(target))
+    sys.stdout.flush()
 
-    target = target[3:]
+    # target will cab be a list of sub-reddits and not just one, delimited by semi-colon
+    delimiter = ";"
 
     if options.is_subreddit:
-        process_subreddit(subreddit=reddit.get_subreddit(target),
-                          period=options.period, limit=options.limit,
-                          count_word_freqs=options.count_word_freqs,
-                          max_threshold=options.max_threshold)
+
+        subreddits = target.split(delimiter)
+
+        sys.stdout.write("List of subreddits: {0}\n".format(subreddits))
+        sys.stdout.flush()
+        for subreddit in subreddits:
+
+            # remove the /r/ - three characters
+            subreddit = subreddit[3:] 
+            sys.stdout.write("****Analysing the subreddit {0}\n".format(subreddit) )
+            sys.stdout.flush()
+            
+            process_subreddit(subreddit=reddit.subreddit(subreddit),
+                              period=options.period, limit=options.limit,
+                              count_word_freqs=options.count_word_freqs,
+                              max_threshold=options.max_threshold,
+                              search_query=options.search_string)
     else:
         process_redditor(redditor=reddit.get_redditor(target), limit=options.limit,
                          count_word_freqs=options.count_word_freqs,
@@ -342,6 +383,8 @@ def main():
     # build a string containing all the words for the word cloud software
     output = ""
 
+    target = target.replace("/r/","-")
+    target = target.replace(";","")
     # open output file to store the output string
     out_file_name = "{0}.csv".format(target)
 

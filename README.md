@@ -75,10 +75,27 @@ This command will detail all of the command line options and arguments for the
 
 ### Make a MUW cloud for a subreddit or redditor
 
+
+#### Before you use - create an app
+To query the subreddits, you need two configurations:
+- client id 
+- client secret 
+
+If you have a Reddit App, you can copy the configurations, 
+else, create one (here)[https://www.reddit.com/prefs/apps]
+
+#### Before you use the CLI - set environment variables
+- praw_client_id whose value is the client id
+- praw_client_secret whose value is the client secret
+
+#### How to use the command 
+
 To count the most-used words for a subreddit over the last month, enter the
 following command:
 
     word_freqs YOUR-USERNAME /r/SUBREDDIT
+OR if there are more than one subreddits to search
+    word_freqs YOUR-USERNAME "/r/SUBREDDIT1;/r/SUBREDDIT2;/r/SUBREDDIT3"
 
 Similarly, for a reddit user:
 
