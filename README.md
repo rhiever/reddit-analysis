@@ -75,10 +75,27 @@ This command will detail all of the command line options and arguments for the
 
 ### Make a MUW cloud for a subreddit or redditor
 
+
+#### Before you use - create an app
+To query the subreddits, you need two configurations:
+- client id 
+- client secret 
+
+If you have a Reddit App, you can copy the configurations, 
+else, create one (here)[https://www.reddit.com/prefs/apps]
+
+#### Before you use the CLI - set environment variables
+- praw_client_id whose value is the client id
+- praw_client_secret whose value is the client secret
+
+#### How to use the command 
+
 To count the most-used words for a subreddit over the last month, enter the
 following command:
 
     word_freqs YOUR-USERNAME /r/SUBREDDIT
+OR if there are more than one subreddits to search
+    word_freqs YOUR-USERNAME "/r/SUBREDDIT1;/r/SUBREDDIT2;/r/SUBREDDIT3"
 
 Similarly, for a reddit user:
 
@@ -87,6 +104,23 @@ Similarly, for a reddit user:
 where `YOUR-USERNAME` is your reddit username and `SUBREDDIT` / `REDDITOR` is
 the subreddit / redditor you want to make the MUW cloud for. You
 must provide *both* arguments for the script to work properly.
+
+#### Example usages
+Produce word frequency for two subreddits `/r/sharktankindia` and `/r/sharktank`
+```console
+foo@bar:~$ word_freqs someusername "/r/sharktankindia;/r/sharktank" 
+```
+Produce word frequency for two subreddits `/r/sharktankindia` and `/r/sharktank` for the submissions which happened in the last day as well as matching the string "Season 2"
+```console
+foo@bar:~$ word_freqs someusername "/r/sharktankindia;/r/sharktank" -p day -s "Season 2"
+```
+
+Produce work frequency for two subreddits `/r/Pizza` and `/r/Connecticut` matching one of the strings "New York" OR "NY Style" OR "China Dishes"
+```console
+foo@bar:~$ word_freqs someusername "/r/Pizza;/r/Connecticut" -p day -s '"Detroit" OR "New York" OR "NY Style" OR "China Dishes"'
+```
+
+The above query will search the submission title as well as the comments of the submission for the matches. 
 
 **Why is your username required?** Simply because it will be used as the user-agent when making the Reddit API request. Reddit asks its API users to use something unique as the user-agent and recomends to use the users username.
 
@@ -105,3 +139,5 @@ of `reddit-analysis` simultaneously and not risk getting banned for overusing th
 To enable multiprocess PRAW in `reddit-analysis`, add the `-u` flag.
 
 See the [PRAW documentation](https://praw.readthedocs.org/en/latest/pages/multiprocess.html) for more information.
+
+
