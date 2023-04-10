@@ -115,6 +115,13 @@ Produce word frequency for two subreddits `/r/sharktankindia` and `/r/sharktank`
 foo@bar:~$ word_freqs someusername "/r/sharktankindia;/r/sharktank" -p day -s "Season 2"
 ```
 
+Produce work frequency for two subreddits `/r/Pizza` and `/r/Connecticut` matching one of the strings "New York" OR "NY Style" OR "China Dishes"
+```console
+foo@bar:~$ word_freqs someusername "/r/Pizza;/r/Connecticut" -p day -s '"Detroit" OR "New York" OR "NY Style" OR "China Dishes"'
+```
+
+The above query will search the submission title as well as the comments of the submission for the matches. 
+
 **Why is your username required?** Simply because it will be used as the user-agent when making the Reddit API request. Reddit asks its API users to use something unique as the user-agent and recomends to use the users username.
 
 Once the script completes, it will create a file called `subreddit-SUBREDDIT.csv` (or
